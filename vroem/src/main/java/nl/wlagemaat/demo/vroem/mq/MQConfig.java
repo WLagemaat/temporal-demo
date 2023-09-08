@@ -15,14 +15,22 @@ public class MQConfig {
     @Value("${mq.topic.exchange}")
     private String topicExchangeName;
 
-    @Value("${mq.queue}")
-    private String queueName;
+    @Value("${mq.queue.vroem}")
+    private String vroemQueueValue;
+
+    @Value("${mq.queue.bas}")
+    private String basQueueValue;
 
     @Value("${mq.routing.key}")
     private String routingKey;
     @Bean
-    Queue queue() {
-        return new Queue(queueName, false);
+    Queue vroemQueue() {
+        return new Queue(vroemQueueValue, false);
+    }
+
+    @Bean
+    Queue BasQueue() {
+        return new Queue(basQueueValue, false);
     }
 
     @Bean
@@ -41,13 +49,13 @@ public class MQConfig {
 
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(queueName);
+        container.setQueueNames(vroemQueueValue);
         container.setMessageListener(listenerAdapter);
         return container;
     }
 
     @Bean
-    MessageListenerAdapter listenerAdapter(Receiver receiver) {
-        return new MessageListenerAdapter(receiver, "receiveMessage");
+    MessageListenerAdapter listenerAdapter(MQReceiver MQReceiver) {
+        return new MessageListenerAdapter(MQReceiver, "receiveMessage");
     }
 }

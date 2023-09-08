@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class MQRunner implements CommandLineRunner {
 
     private final RabbitTemplate rabbitTemplate;
-    private final Receiver receiver;
+    private final MQReceiver MQReceiver;
 
     @Value("${mq.topic.exchange}")
     private String topicExchangeName;
@@ -19,16 +19,15 @@ public class MQRunner implements CommandLineRunner {
     @Value("${mq.routing.key}")
     private String routingKey;
 
-    public MQRunner(Receiver receiver, RabbitTemplate rabbitTemplate) {
-        this.receiver = receiver;
+    public MQRunner(MQReceiver MQReceiver, RabbitTemplate rabbitTemplate) {
+        this.MQReceiver = MQReceiver;
         this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         System.out.println("Sending message...");
         rabbitTemplate.convertAndSend(topicExchangeName, routingKey, "Hello from RabbitMQ!");
-        receiver.getLatch().await(10000, TimeUnit.MILLISECONDS);
     }
 
 }

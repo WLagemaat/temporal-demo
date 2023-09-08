@@ -21,16 +21,15 @@ public class MessageRabbitMQTest {
     private RabbitTemplate rabbitTemplate;
 
     @Autowired
-    private Receiver receiver;
+    private MQReceiver MQReceiver;
 
     @Value("${mq.queue}")
     private String queueName;
 
     @Test
-    public void test() throws Exception {
+    public void test() {
         try {
             rabbitTemplate.convertAndSend(queueName, "Hello from RabbitMQ!");
-            receiver.getLatch().await(10000, TimeUnit.MILLISECONDS);
         } catch (AmqpConnectException e) {
             // ignore - rabbit is not running
         }

@@ -1,34 +1,52 @@
 package nl.wlagemaat.demo.vroem.rdw;
 
-import nl.wlagemaat.demo.vroem.exception.TechnischeRdwError;
-import nl.wlagemaat.demo.vroem.model.AanleveringDto;
-import nl.wlagemaat.demo.vroem.model.OvertredingVerwerkingsResultaat;
+import lombok.RequiredArgsConstructor;
+import nl.wlagemaat.demo.vroem.exception.TechnicalRdwError;
+import nl.wlagemaat.demo.vroem.model.TransgressionDto;
+import nl.wlagemaat.demo.vroem.model.TransgressionProcessingResult;
+import nl.wlagemaat.demo.vroem.mq.MQClient;
+import nl.wlagemaat.demo.vroem.repository.TransgressionRepository;
+import nl.wlagemaat.demo.vroem.repository.entiteiten.Transgression;
 import org.springframework.stereotype.Service;
 
-import static nl.wlagemaat.demo.vroem.helper.KansBerekening.genereerKenteken;
-import static nl.wlagemaat.demo.vroem.helper.KansBerekening.isKansGeslaagd;
+import static nl.wlagemaat.demo.vroem.helper.VroemUtilities.generateLicenseplate;
+import static nl.wlagemaat.demo.vroem.helper.VroemUtilities.doesPass;
 
 @Service
+@RequiredArgsConstructor
 public class RdwService {
+
+    TransgressionRepository transgressionRepository;
+    MQClient mqClient;
 
     /**
      * Bekijkt adv kansberekening of een aanlevering een kenteken heeft.
      */
-    public OvertredingVerwerkingsResultaat bepaalKenteken(AanleveringDto aanleveringDto){
-        var resultaat = OvertredingVerwerkingsResultaat.builder().overtredingsNummer(aanleveringDto.overtredingsnummer());
-        if(isKansGeslaagd(aanleveringDto.rdwKans())){
-            resultaat.geslaagd(true);
+    public TransgressionProcessingResult determineLicenseplate(TransgressionDto transgressionDto){
+        var resultaat = TransgressionProcessingResult.builder().transgressionNumber(transgressionDto.transgressionNumber());
+        if(doesPass(transgressionDto.rdwOdds())){
+            resultaat.succeeded(true);
+            saveKenteken(transgressionDto);
         } else {
-            // todo create BASTAAK
+            createBasTask(transgressionDto);
+            resultaat.isManualTask(true);
+            resultaat.succeeded(true);
+
         }
-        if(!isKansGeslaagd(aanleveringDto.rdwTechnischKans())){
-            throw new TechnischeRdwError("RDW niet bereikbaar!");
+        if(!doesPass(transgressionDto.rdwTechnicalErrorOdds())){
+            throw new TechnicalRdwError("RDW not reachable!");
         }
         return resultaat.build();
     }
 
-    private void bewaarKenteken(AanleveringDto aanleveringDto){
-        var kenteken = genereerKenteken();
+    private void saveKenteken(TransgressionDto transgressionDto){
+        Transgression transgression = transgressionRepository.findByOvertredingsnummer(transgressionDto.transgressionNumber());
+        var kenteken = generateLicenseplate();
+        transgression.setKenteken(kenteken);
+        transgressionRepository.save(transgression);
+    }
 
+    private void createBasTask(TransgressionDto transgressionDto){
+        mqClient.sendBasTask(transgressionDto.transgressionNumber());
     }
 }
