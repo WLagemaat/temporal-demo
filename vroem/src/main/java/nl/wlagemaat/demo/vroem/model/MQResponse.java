@@ -1,5 +1,7 @@
 package nl.wlagemaat.demo.vroem.model;
 
-public interface MQResponse {
-    Party getParty();
+import java.io.Serializable;
+
+public interface MQResponse extends Serializable {
+    Party party();
 }

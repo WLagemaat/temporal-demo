@@ -6,11 +6,11 @@ import nl.wlagemaat.demo.vroem.model.TransgressionDto;
 import nl.wlagemaat.demo.vroem.model.TransgressionProcessingResult;
 import nl.wlagemaat.demo.vroem.mq.MQClient;
 import nl.wlagemaat.demo.vroem.repository.TransgressionRepository;
-import nl.wlagemaat.demo.vroem.repository.entiteiten.Transgression;
+import nl.wlagemaat.demo.vroem.repository.entities.Transgression;
 import org.springframework.stereotype.Service;
 
-import static nl.wlagemaat.demo.vroem.helper.VroemUtilities.generateLicenseplate;
-import static nl.wlagemaat.demo.vroem.helper.VroemUtilities.doesPass;
+import static nl.wlagemaat.demo.vroem.util.VroemUtilities.generateLicensePlate;
+import static nl.wlagemaat.demo.vroem.util.VroemUtilities.doesPass;
 
 @Service
 @RequiredArgsConstructor
@@ -20,13 +20,13 @@ public class RdwService {
     MQClient mqClient;
 
     /**
-     * Bekijkt adv kansberekening of een aanlevering een kenteken heeft.
+     * Determines if the licenseplate is known or that a BAS-TASK has to be created
      */
-    public TransgressionProcessingResult determineLicenseplate(TransgressionDto transgressionDto){
+    public TransgressionProcessingResult determineLicenseplate(final TransgressionDto transgressionDto){
         var resultaat = TransgressionProcessingResult.builder().transgressionNumber(transgressionDto.transgressionNumber());
         if(doesPass(transgressionDto.rdwOdds())){
             resultaat.succeeded(true);
-            saveKenteken(transgressionDto);
+            saveLicensePlate(transgressionDto);
         } else {
             createBasTask(transgressionDto);
             resultaat.isManualTask(true);
@@ -39,10 +39,16 @@ public class RdwService {
         return resultaat.build();
     }
 
-    private void saveKenteken(TransgressionDto transgressionDto){
-        Transgression transgression = transgressionRepository.findByOvertredingsnummer(transgressionDto.transgressionNumber());
-        var kenteken = generateLicenseplate();
-        transgression.setKenteken(kenteken);
+    public void finishBasTask(final String transgressionNumber, final String licensePlate){
+        Transgression transgression = transgressionRepository.findByTransgressionNumber(transgressionNumber);
+        transgression.setLicensePlate(licensePlate);
+        transgressionRepository.save(transgression);
+    }
+
+    private void saveLicensePlate(final TransgressionDto transgressionDto){
+        Transgression transgression = transgressionRepository.findByTransgressionNumber(transgressionDto.transgressionNumber());
+        var licensePlate = generateLicensePlate();
+        transgression.setLicensePlate(licensePlate);
         transgressionRepository.save(transgression);
     }
 

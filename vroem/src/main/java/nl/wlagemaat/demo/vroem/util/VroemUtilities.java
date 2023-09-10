@@ -1,17 +1,15 @@
-package nl.wlagemaat.demo.vroem.helper;
+package nl.wlagemaat.demo.vroem.util;
 
-import com.github.javafaker.service.FakeValuesService;
-import com.github.javafaker.service.RandomService;
+import com.github.javafaker.Faker;
 import lombok.experimental.UtilityClass;
 
-import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 
 @UtilityClass
 public class VroemUtilities {
 
-    FakeValuesService fakeValuesService = new FakeValuesService(
-            Locale.of("nl","NL"), new RandomService());
+    Faker faker = new Faker();
+
     /**
      * Randomized in percentages
      * @param kans 1-100 %
@@ -25,7 +23,15 @@ public class VroemUtilities {
     /**
      * Genereer een kenteken in het formaat: DD-44-DD
      */
-    public static String generateLicenseplate(){
-        return fakeValuesService.bothify("??-##-??").toUpperCase();
+    public static String generateLicensePlate(){
+        return faker.bothify("??-##-??").toUpperCase();
     }
+
+    /**
+     * Genereer een kenteken in het formaat: DD-44-DD
+     */
+    public static String generateTransgressionNumber(){
+        return faker.bothify("TEST-######-??").toUpperCase();
+    }
+
 }

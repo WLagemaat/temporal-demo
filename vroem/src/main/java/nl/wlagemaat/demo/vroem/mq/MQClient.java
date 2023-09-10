@@ -1,7 +1,8 @@
 package nl.wlagemaat.demo.vroem.mq;
 
 import lombok.RequiredArgsConstructor;
-import nl.wlagemaat.demo.vroem.repository.entiteiten.Transgression;
+import nl.wlagemaat.demo.vroem.model.TransgressionDto;
+import nl.wlagemaat.demo.vroem.repository.entities.Transgression;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,12 +25,12 @@ public class MQClient {
     @Value("${mq.routing.key.sven}")
     private String routingSven;
 
-    public void sendBasTask(String overtredingsnummer){
-        rabbitTemplate.convertAndSend(topicExchangeName, routingBas, overtredingsnummer);
+    public void sendBasTask(String transgressionNumber){
+        rabbitTemplate.convertAndSend(topicExchangeName, routingBas, transgressionNumber);
     }
 
-    public void sendWormTask(Transgression transgression){
-        rabbitTemplate.convertAndSend(topicExchangeName, routingWorm, transgression.getKenteken());
+    public void sendWormTask(String transgressionNumber){
+        rabbitTemplate.convertAndSend(topicExchangeName, routingWorm, transgressionNumber);
     }
 
     public void sendSvenTask(Transgression transgression){

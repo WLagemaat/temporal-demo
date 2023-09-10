@@ -1,4 +1,4 @@
-package nl.wlagemaat.demo.vroem.repository.entiteiten;
+package nl.wlagemaat.demo.vroem.repository.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,10 +14,11 @@ public class Transgression {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    String overtredingsnummer;
-    String kenteken;
+    String transgressionNumber;
+    String licensePlate;
     boolean isMulder;
-    String betrokkene;
+    boolean isProsecuted;
+    String personConcerned;
 
 
 }

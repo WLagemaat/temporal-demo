@@ -1,4 +1,4 @@
-package nl.wlagemaat.demo.vroem.mulder;
+package nl.wlagemaat.demo.vroem.cvom;
 
 import lombok.RequiredArgsConstructor;
 import nl.wlagemaat.demo.vroem.exception.TechnicalMulderError;
@@ -10,15 +10,15 @@ import static nl.wlagemaat.demo.vroem.util.VroemUtilities.doesPass;
 
 @Service
 @RequiredArgsConstructor
-public class MulderService {
+public class CvomService {
 
     /**
      * Determines if a message will reach Mulder based on the given technical error odds
      */
-    public TransgressionProcessingResult sendToMulder(TransgressionDto transgressionDto) {
+    public TransgressionProcessingResult sendToCvom(TransgressionDto transgressionDto) {
         var resultaat = TransgressionProcessingResult.builder().transgressionNumber(transgressionDto.transgressionNumber());
-        if (!doesPass(transgressionDto.mulderTechnicalErrorOdds())) {
-            throw new TechnicalMulderError("Mulder not reached!");
+        if (!doesPass(transgressionDto.cvomTechnicalErrorOdds())) {
+            throw new TechnicalMulderError("CVOM not reached!");
         }
         resultaat.succeeded(true);
         return resultaat.build();

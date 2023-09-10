@@ -1,12 +1,8 @@
 package nl.wlagemaat.demo.vroem.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.Builder;
 
-import java.io.Serializable;
-
-@EqualsAndHashCode(callSuper = false)
-@Value
+@Builder
 public record TransgressionDto(
         String transgressionNumber,
         Integer validOdds,
@@ -16,7 +12,8 @@ public record TransgressionDto(
         Integer mulderTechnicalErrorOdds,
         Integer wormTechnicalErrorOdds,
         Integer svenTechnicalErrorOdds,
+        Integer cvomTechnicalErrorOdds,
         Party party
-) implements MQResponse, Serializable {
+) implements MQResponse {
 
 }

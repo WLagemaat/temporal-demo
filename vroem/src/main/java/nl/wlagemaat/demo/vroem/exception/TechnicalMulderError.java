@@ -1,6 +1,6 @@
 package nl.wlagemaat.demo.vroem.exception;
 
-public class TechnicalMulderError extends TechnicalError {
+public class TechnicalMulderError extends VroemTechnicalError {
 
     public TechnicalMulderError(String message){
         super(message);
