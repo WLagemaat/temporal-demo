@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import nl.wlagemaat.demo.vroem.exception.VroemTechnicalError;
+import nl.wlagemaat.demo.vroem.exception.TechnicalError;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,7 +26,7 @@ public class JsonMapper {
 		try {
 			return objectMapper.readValue(json, clazz);
 		} catch (JsonProcessingException e) {
-			throw new VroemTechnicalError("unable to parse JSON", e);
+			throw new TechnicalError("unable to parse JSON", e);
 		}
 	}
 	
@@ -34,7 +34,7 @@ public class JsonMapper {
 		try {
 			return objectMapper.readValue(json, clazz);
 		} catch (JsonProcessingException e) {
-			throw new VroemTechnicalError("unable to parse JSON", e);
+			throw new TechnicalError("unable to parse JSON", e);
 		}
 	}
 	
@@ -42,7 +42,7 @@ public class JsonMapper {
 		try {
 			return objectMapper.writeValueAsString(value);
 		} catch (JsonProcessingException e) {
-			throw new VroemTechnicalError("unable to write JSON", e);
+			throw new TechnicalError("unable to write JSON", e);
 		}
 	}
 }

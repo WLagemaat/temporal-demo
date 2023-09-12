@@ -2,8 +2,8 @@ package nl.wlagemaat.demo.vroem.sven;
 
 import lombok.RequiredArgsConstructor;
 import nl.wlagemaat.demo.vroem.exception.TechnicalRdwError;
-import nl.wlagemaat.demo.vroem.model.TransgressionDto;
-import nl.wlagemaat.demo.vroem.model.TransgressionProcessingResult;
+import nl.wlagemaat.demo.vroem.model.FineDto;
+import nl.wlagemaat.demo.vroem.model.FineProcessingResult;
 import nl.wlagemaat.demo.vroem.mq.MQClient;
 import nl.wlagemaat.demo.vroem.repository.TransgressionRepository;
 import nl.wlagemaat.demo.vroem.repository.entities.Transgression;
@@ -21,12 +21,12 @@ public class SvenService {
     /**
      * Determines if the concerned person has to be prosecuted
      */
-    public TransgressionProcessingResult determineProsecution(final TransgressionDto transgressionDto){
-        if(!doesPass(transgressionDto.svenTechnicalErrorOdds())){
+    public FineProcessingResult determineProsecution(final FineDto fineDto){
+        if(!doesPass(fineDto.svenTechnicalErrorOdds())){
             throw new TechnicalRdwError("SVEN not reachable!");
         }
-        createSvenTask(transgressionDto);
-        var resultaat = TransgressionProcessingResult.builder().transgressionNumber(transgressionDto.transgressionNumber());
+        createSvenTask(fineDto);
+        var resultaat = FineProcessingResult.builder().transgressionNumber(fineDto.transgressionNumber());
         resultaat.succeeded(true);
         return resultaat.build();
     }
@@ -45,7 +45,7 @@ public class SvenService {
         mqClient.sendWormTask(transgressionNumber);
     }
 
-    private void createSvenTask(TransgressionDto transgressionDto){
-        mqClient.sendWormTask(transgressionDto.transgressionNumber());
+    private void createSvenTask(FineDto fineDto){
+        mqClient.sendWormTask(fineDto.transgressionNumber());
     }
 }

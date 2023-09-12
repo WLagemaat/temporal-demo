@@ -1,21 +1,16 @@
 package nl.wlagemaat.demo.vroem.mq;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
-@Slf4j
 @Configuration
 public class MQConfig {
 
@@ -30,12 +25,6 @@ public class MQConfig {
 
     @Value("${mq.routing.key.pre-intake}")
     private String routingKey;
-
-    @Value("${spring.rabbitmq.username}")
-    private String user;
-
-    @Value("${spring.rabbitmq.password}")
-    private String password;
     @Bean
     Queue vroemQueue() {
         return new Queue(vroemQueueValue, false);
@@ -57,20 +46,18 @@ public class MQConfig {
     }
 
     @Bean
-    @Primary
-    public CachingConnectionFactory rabbitMQConnectionFactory(ConnectionFactory connectionFactory) {
-        log.info("Creating connectionFactory for {}@{}:{}", connectionFactory.getUsername(), connectionFactory.getHost(), connectionFactory.getPort());
-        var factory = new CachingConnectionFactory(connectionFactory.getHost(), connectionFactory.getPort());
-        factory.setUsername(user);
-        factory.setPassword(password);
-        factory.setVirtualHost(connectionFactory.getVirtualHost());
-        return factory;
+    SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
+                                             MessageListenerAdapter listenerAdapter) {
+
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+        container.setQueueNames(vroemQueueValue);
+        container.setMessageListener(listenerAdapter);
+        return container;
     }
 
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory rabbitMQConnectionFactory, ObjectMapper objectMapper) {
-        final RabbitTemplate rabbitTemplate = new RabbitTemplate(rabbitMQConnectionFactory);
-        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter(objectMapper));
-        return rabbitTemplate;
+    MessageListenerAdapter listenerAdapter(MQReceiver MQReceiver) {
+        return new MessageListenerAdapter(MQReceiver, "receiveMessage");
     }
 }

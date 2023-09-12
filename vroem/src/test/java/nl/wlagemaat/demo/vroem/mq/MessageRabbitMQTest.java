@@ -1,7 +1,8 @@
 package nl.wlagemaat.demo.vroem.mq;
 
 import nl.wlagemaat.demo.vroem.model.Party;
-import nl.wlagemaat.demo.vroem.model.TransgressionDto;
+import nl.wlagemaat.demo.vroem.model.FineDto;
+import nl.wlagemaat.demo.vroem.util.JsonMapper;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.amqp.AmqpConnectException;
@@ -17,6 +18,9 @@ import static nl.wlagemaat.demo.vroem.util.VroemUtilities.generateTransgressionN
 public class MessageRabbitMQTest {
 
     @Autowired
+    private JsonMapper jsonMapper;
+
+    @Autowired
     private RabbitTemplate rabbitTemplate;
 
     @Value("${mq.queue.vroem}")
@@ -25,7 +29,17 @@ public class MessageRabbitMQTest {
     @Test
     public void test() {
         try {
-            rabbitTemplate.convertAndSend(queueName, generateDefaultTransgression().build());
+            String json =jsonMapper.toJson(generateDefaultFine().build());
+            rabbitTemplate.convertAndSend(queueName, json);
+        } catch (AmqpConnectException e) {
+            // ignore - rabbit is not running
+        }
+    }
+
+    @Test
+    public void testString() {
+        try {
+            rabbitTemplate.convertAndSend(queueName, "Message test");
         } catch (AmqpConnectException e) {
             // ignore - rabbit is not running
         }
@@ -33,8 +47,8 @@ public class MessageRabbitMQTest {
 
 
 
-    private TransgressionDto.TransgressionDtoBuilder generateDefaultTransgression(){
-        return TransgressionDto.builder()
+    private FineDto.FineDtoBuilder generateDefaultFine(){
+        return FineDto.builder()
                 .party(Party.HANS)
                 .isMulder(doesPass(70))
                 .validOdds(5)

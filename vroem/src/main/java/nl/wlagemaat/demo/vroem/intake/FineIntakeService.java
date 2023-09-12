@@ -1,8 +1,8 @@
 package nl.wlagemaat.demo.vroem.intake;
 
 import lombok.RequiredArgsConstructor;
-import nl.wlagemaat.demo.vroem.model.TransgressionDto;
-import nl.wlagemaat.demo.vroem.model.TransgressionProcessingResult;
+import nl.wlagemaat.demo.vroem.model.FineDto;
+import nl.wlagemaat.demo.vroem.model.FineProcessingResult;
 import nl.wlagemaat.demo.vroem.repository.TransgressionRepository;
 import nl.wlagemaat.demo.vroem.repository.entities.Transgression;
 import org.springframework.stereotype.Service;
@@ -11,28 +11,28 @@ import static nl.wlagemaat.demo.vroem.util.VroemUtilities.doesPass;
 
 @Service
 @RequiredArgsConstructor
-public class FineDeliveryService {
+public class FineIntakeService {
 
     TransgressionRepository transgressionRepository;
 
     /**
      * Bekijkt adv kansberekening of een aanlevering valide is.
      */
-    public TransgressionProcessingResult validate(TransgressionDto transgressionDto){
-        var resultaat = TransgressionProcessingResult.builder().transgressionNumber(transgressionDto.transgressionNumber());
-        if(doesPass(transgressionDto.validOdds())){
+    public FineProcessingResult validate(FineDto fineDto){
+        var resultaat = FineProcessingResult.builder().transgressionNumber(fineDto.transgressionNumber());
+        if(doesPass(fineDto.validOdds())){
             resultaat.succeeded(true);
-            saveTransgression(transgressionDto);
+            saveTransgression(fineDto);
         } else {
             resultaat.succeeded(false).errorMessage("Invalide aanlevering");
         }
         return resultaat.build();
     }
 
-    private void saveTransgression(TransgressionDto transgressionDto){
+    private void saveTransgression(FineDto fineDto){
         Transgression transgression = new Transgression();
-        transgression.setTransgressionNumber(transgressionDto.transgressionNumber());
-        transgression.setMulder(transgressionDto.isMulder());
+        transgression.setTransgressionNumber(fineDto.transgressionNumber());
+        transgression.setMulder(fineDto.isMulder());
         transgressionRepository.save(transgression);
     }
 }

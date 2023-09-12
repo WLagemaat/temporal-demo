@@ -2,7 +2,6 @@
 mq:
   queue:
     vroem: vroem
-    vroem.dlq: vroem-dlq
     bas: bas
     worm: worm
     sven: sven
@@ -18,11 +17,12 @@ mq:
 
 spring:
   rabbitmq:
-    addresses: amqps://rabbit:rabbit@127.0.0.1
-    password: rabbit
     username: rabbit
+    password: rabbit
     ssl:
       enabled: false
+    host: localhost
+    port: 5672
   sql:
     init:
       platform: postgres
@@ -35,3 +35,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: postgres
+
+app:
+  temporal:
+    host: ${APP_TEMPORAL_HOST:localhost:7233}

@@ -2,8 +2,10 @@ package nl.wlagemaat.demo.vroem.model;
 
 import lombok.Builder;
 
+import java.io.Serializable;
+
 @Builder
-public record TransgressionDto(
+public record FineDto(
         String transgressionNumber,
         Integer validOdds,
         Integer rdwOdds,
@@ -14,6 +16,6 @@ public record TransgressionDto(
         Integer svenTechnicalErrorOdds,
         Integer cvomTechnicalErrorOdds,
         Party party
-) implements MQResponse {
+) implements Serializable {
 
 }

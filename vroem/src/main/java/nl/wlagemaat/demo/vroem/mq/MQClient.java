@@ -1,7 +1,6 @@
 package nl.wlagemaat.demo.vroem.mq;
 
 import lombok.RequiredArgsConstructor;
-import nl.wlagemaat.demo.vroem.model.TransgressionDto;
 import nl.wlagemaat.demo.vroem.repository.entities.Transgression;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
