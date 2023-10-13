@@ -13,26 +13,31 @@ import static nl.wlagemaat.demo.vroem.util.VroemUtilities.doesPass;
 @RequiredArgsConstructor
 public class FineIntakeService {
 
-    TransgressionRepository transgressionRepository;
+    private final TransgressionRepository transgressionRepository;
 
     /**
-     * Bekijkt adv kansberekening of een aanlevering valide is.
+     * Based on the supplied odds, determines if the fine is valid
      */
     public FineProcessingResult validate(FineDto fineDto){
-        var resultaat = FineProcessingResult.builder().transgressionNumber(fineDto.transgressionNumber());
+        var resultaat = FineProcessingResult.builder();
         if(doesPass(fineDto.validOdds())){
             resultaat.succeeded(true);
-            saveTransgression(fineDto);
         } else {
             resultaat.succeeded(false).errorMessage("Invalide aanlevering");
         }
         return resultaat.build();
     }
 
-    private void saveTransgression(FineDto fineDto){
+    /**
+     * Stores the transgression in the database
+     */
+    public FineProcessingResult saveTransgression(FineDto fineDto){
+
         Transgression transgression = new Transgression();
         transgression.setTransgressionNumber(fineDto.transgressionNumber());
         transgression.setMulder(fineDto.isMulder());
         transgressionRepository.save(transgression);
+
+        return FineProcessingResult.builder().succeeded(true).build();
     }
 }

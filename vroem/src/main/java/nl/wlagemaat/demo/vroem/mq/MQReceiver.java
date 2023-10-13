@@ -53,8 +53,22 @@ public class MQReceiver {
         fineIntakeWorkflowService.intake(input);
     }
 
+    public void receiveMessage(Object input) {
+        System.out.println("Received Object <" + input + ">");
+    }
+
+    public void receiveMessage(byte[] input) {
+        var stringInput = new String(input).replaceAll("\\\\", "");
+        System.out.println("Received Byte[] <" + stringInput + ">");
+        FineDto fine = jsonMapper.parseJson(stringInput, FineDto.class);
+        fineIntakeWorkflowService.intake(fine);
+    }
+
     public void receiveMessage(String message) {
         System.out.println("Received Message <" + message + ">");
+
+        FineDto fine = jsonMapper.parseJson(message, FineDto.class);
+        fineIntakeWorkflowService.intake(fine);
     }
     public void receiveMessage(Message message) {
         String jsonValue = new String(message.getBody(), UTF_8);

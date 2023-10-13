@@ -1,0 +1,19 @@
+POST http://localhost:15672/api/exchanges/%2F/amq.default/publish
+Authorization: Basic rabbit rabbit
+Accept: application/json
+Content-Type: application/json
+
+{
+  "vhost": "/",
+  "name": "vroem",
+  "properties": {
+    "delivery_mode": 1,
+    "headers": {}
+  },
+  "routing_key": "vroem",
+  "delivery_mode": "1",
+  "payload":"{ \"transgressionNumber\" : \"-\",\"validOdds\" : 95,\"rdwOdds\" : 1,\"rdwTechnicalErrorOdds\" : 3,\"isMulder\" : true,\"mulderTechnicalErrorOdds\" : 5,\"wormTechnicalErrorOdds\" : 5,\"svenTechnicalErrorOdds\" : 5,\"cvomTechnicalErrorOdds\" : 5,\"party\" : \"HANS\"}",
+  "headers": {},
+  "props": { "content_type": "application/plain" },
+  "payload_encoding": "string"
+}

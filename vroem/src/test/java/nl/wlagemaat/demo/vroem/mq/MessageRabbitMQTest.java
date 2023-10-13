@@ -30,7 +30,7 @@ public class MessageRabbitMQTest {
     public void test() {
         try {
             String json =jsonMapper.toJson(generateDefaultFine().build());
-            rabbitTemplate.convertAndSend(queueName, json);
+            rabbitTemplate.convertAndSend("unknown", json);
         } catch (AmqpConnectException e) {
             // ignore - rabbit is not running
         }
@@ -51,13 +51,13 @@ public class MessageRabbitMQTest {
         return FineDto.builder()
                 .party(Party.HANS)
                 .isMulder(doesPass(70))
-                .validOdds(5)
+                .validOdds(95)
                 .transgressionNumber(generateTransgressionNumber())
                 .cvomTechnicalErrorOdds(5)
                 .mulderTechnicalErrorOdds(5)
                 .wormTechnicalErrorOdds(5)
                 .svenTechnicalErrorOdds(5)
-                .rdwOdds(10)
+                .rdwOdds(80)
                 .rdwTechnicalErrorOdds(3);
 
     }

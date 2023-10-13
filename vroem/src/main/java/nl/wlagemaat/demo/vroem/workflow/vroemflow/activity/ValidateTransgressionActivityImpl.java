@@ -1,10 +1,12 @@
 package nl.wlagemaat.demo.vroem.workflow.vroemflow.activity;
 
+import io.temporal.workflow.Workflow;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.wlagemaat.demo.vroem.intake.FineIntakeService;
 import nl.wlagemaat.demo.vroem.model.FineDto;
 import nl.wlagemaat.demo.vroem.model.FineProcessingResult;
+import nl.wlagemaat.demo.vroem.util.VroemUtilities;
 import org.springframework.stereotype.Component;
 
 @Slf4j

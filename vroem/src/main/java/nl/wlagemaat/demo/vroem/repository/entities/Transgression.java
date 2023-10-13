@@ -11,7 +11,7 @@ import lombok.Data;
 public class Transgression {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     String transgressionNumber;

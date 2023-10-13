@@ -1,9 +1,8 @@
-package nl.wlagemaat.demo.vroem.workflow;
+package nl.wlagemaat.demo.bas.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
-import io.temporal.client.WorkflowOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
@@ -12,9 +11,8 @@ import io.temporal.worker.WorkerFactory;
 import io.temporal.workflow.Workflow;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.wlagemaat.demo.vroem.model.FineDto;
-import nl.wlagemaat.demo.vroem.workflow.util.TemporalDataConverterHelper;
-import nl.wlagemaat.demo.vroem.workflow.vroemflow.activity.VroemActivityMarker;
+import nl.wlagemaat.demo.bas.workflow.manualtasks.activity.ManualTaskActivityMarker;
+import nl.wlagemaat.demo.bas.workflow.util.TemporalDataConverterHelper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,10 +29,9 @@ import static java.time.Duration.ofSeconds;
 public class TemporalService implements InitializingBean {
 
     public static final String PRE_INTAKE_NAMESPACE = "PRE_INTAKE";
-    public static final String PRE_INTAKE_QUEUE = "PRE_INTAKE_QUEUE";
-    public static final String VROEM_TASK_QUEUE = "VROEM_TASK_QUEUE";
+    public static final String MANUAL_TASK_QUEUE = "MANUAL_TASK_QUEUE";
 
-    private final List<VroemActivityMarker> vroemActivityImplementations;
+    private final List<ManualTaskActivityMarker> manualTaskActivityImplementations;
 
     @Value("${app.temporal.host}")
     private String temporalHost;
@@ -48,16 +45,16 @@ public class TemporalService implements InitializingBean {
         WorkerFactory factory = WorkerFactory.newInstance(getWorkflowClient());
 
         // Specify the name of the Task Queue that this Worker should poll
-        Worker worker = factory.newWorker(VROEM_TASK_QUEUE);
+        Worker worker = factory.newWorker(MANUAL_TASK_QUEUE);
 
         // Specify which Workflow implementations this Worker will support
-        worker.registerWorkflowImplementationTypes(VroemWorkflowImpl.class);
-        worker.registerActivitiesImplementations(vroemActivityImplementations.toArray());
+        worker.registerWorkflowImplementationTypes(ManualTaskWorkFlowImpl.class);
+        worker.registerActivitiesImplementations(manualTaskActivityImplementations.toArray());
 
         // Begin running the Worker
         factory.start();
 
-        log.info("{} started for task queue: {}", worker.getClass().getName(), VROEM_TASK_QUEUE);
+        log.info("{} started for task queue: {}", worker.getClass().getName(), MANUAL_TASK_QUEUE);
     }
 
     private WorkflowClient getWorkflowClient() {
@@ -69,20 +66,6 @@ public class TemporalService implements InitializingBean {
                 .setNamespace(PRE_INTAKE_NAMESPACE)
                 .build();
         return WorkflowClient.newInstance(WorkflowServiceStubs.newServiceStubs(stubOptions), clientOptions);
-    }
-
-    public VroemWorkflow runnableVroemWorkFlow() {
-        return getWorkflowClient()
-                .newWorkflowStub(VroemWorkflow.class, WorkflowOptions.newBuilder()
-                        .setTaskQueue(VROEM_TASK_QUEUE)
-                        .setWorkflowId("PRE_INTAKE-"+ UUID.randomUUID())
-//                        .setRetryOptions() <-- for the whole flow, not an activity
-                        .build());
-    }
-
-    public void startVroemWorkflow(VroemWorkflow workflow, FineDto fineDto) {
-        log.info("{} started async flow ", workflow.getClass().getName());
-        WorkflowClient.start(workflow::processTransgression, fineDto);
     }
 
     public static <T> T getActivity(Class<T> activityInterface, RetryOptions.Builder retryOptions) {
