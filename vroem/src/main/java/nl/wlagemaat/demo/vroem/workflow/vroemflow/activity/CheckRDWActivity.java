@@ -10,5 +10,5 @@ import nl.wlagemaat.demo.vroem.model.ValidatedFineDto;
 public interface CheckRDWActivity extends VroemActivityMarker {
 	
 	@ActivityMethod(name = "Retrieve licenseplate data from RDW system")
-    FineProcessingResult determineLicenseplate(ValidatedFineDto transgression);
+    FineProcessingResult determineLicenseplate(FineDto transgression);
 }

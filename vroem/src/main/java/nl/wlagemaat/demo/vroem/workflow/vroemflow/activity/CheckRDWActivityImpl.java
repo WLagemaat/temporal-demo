@@ -16,7 +16,7 @@ public class CheckRDWActivityImpl implements CheckRDWActivity {
 	private final RdwService rdwService;
 
 	@Override
-	public FineProcessingResult determineLicenseplate(ValidatedFineDto input) {
+	public FineProcessingResult determineLicenseplate(FineDto input) {
 		return rdwService.determineLicenseplate(input);
 	}
 	

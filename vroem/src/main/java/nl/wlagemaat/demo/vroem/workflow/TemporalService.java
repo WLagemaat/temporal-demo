@@ -1,10 +1,14 @@
 package nl.wlagemaat.demo.vroem.workflow;
 
+import com.uber.m3.tally.RootScopeBuilder;
+import com.uber.m3.tally.Scope;
+import com.uber.m3.tally.StatsReporter;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.common.RetryOptions;
+import io.temporal.common.reporter.MicrometerClientStatsReporter;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.worker.Worker;
@@ -61,13 +65,25 @@ public class TemporalService implements InitializingBean {
     }
 
     private WorkflowClient getWorkflowClient() {
+       // PrometheusMeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+       // StatsReporter reporter = new MicrometerClientStatsReporter(registry);
+        // set up a new scope, report every 10 seconds
+       // Scope scope = new RootScopeBuilder()
+       //         .reporter(reporter)
+       //         .reportEvery(com.uber.m3.util.Duration.ofSeconds(10));
+
         var stubOptions = WorkflowServiceStubsOptions.newBuilder()
                 .setTarget(temporalHost)
+       //         .setMetricsScope(scope)
                 .build();
         var clientOptions = WorkflowClientOptions.newBuilder()
+        //        .setInterceptors(new OpenTracingClientInterceptor())
                 .setDataConverter(TemporalDataConverterHelper.createOmniscientJsonDataConverter())
                 .setNamespace(PRE_INTAKE_NAMESPACE)
                 .build();
+
+
+
         return WorkflowClient.newInstance(WorkflowServiceStubs.newServiceStubs(stubOptions), clientOptions);
     }
 
