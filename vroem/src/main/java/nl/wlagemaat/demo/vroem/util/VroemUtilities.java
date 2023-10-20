@@ -2,10 +2,12 @@ package nl.wlagemaat.demo.vroem.util;
 
 import com.github.javafaker.Faker;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 @UtilityClass
+@Slf4j
 public class VroemUtilities {
 
     private static final Faker faker = new Faker();
@@ -17,6 +19,7 @@ public class VroemUtilities {
      */
     public static boolean doesPass(Integer kans){
         int dice = ThreadLocalRandom.current().nextInt(100);
+        log.info("doesPass odds:{}, diced: {} ",kans,dice);
         return dice <= kans;
     }
 

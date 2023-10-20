@@ -5,7 +5,6 @@ import nl.wlagemaat.demo.vroem.model.FineDto;
 import nl.wlagemaat.demo.vroem.model.FineProcessingResult;
 import nl.wlagemaat.demo.vroem.repository.TransgressionRepository;
 import nl.wlagemaat.demo.vroem.repository.entities.Transgression;
-import nl.wlagemaat.demo.vroem.util.VroemUtilities;
 import org.springframework.stereotype.Service;
 
 import static nl.wlagemaat.demo.vroem.util.VroemUtilities.doesPass;
@@ -17,24 +16,28 @@ public class FineIntakeService {
     private final TransgressionRepository transgressionRepository;
 
     /**
-     * Bekijkt adv kansberekening of een aanlevering valide is.
+     * Based on the supplied odds, determines if the fine is valid
      */
     public FineProcessingResult validate(FineDto fineDto){
-        var result = FineProcessingResult.builder();
+        var resultaat = FineProcessingResult.builder();
         if(doesPass(fineDto.validOdds())){
-            result.succeeded(true);
-            result.transgressionNumber(saveTransgression(fineDto));
+            resultaat.succeeded(true);
         } else {
-            result.succeeded(false).errorMessage("invalid fine");
+            resultaat.succeeded(false).errorMessage("Invalide aanlevering");
         }
-        return result.build();
+        return resultaat.build();
     }
 
-    private String saveTransgression(FineDto fineDto){
+    /**
+     * Stores the transgression in the database
+     */
+    public FineProcessingResult saveTransgression(FineDto fineDto){
+
         Transgression transgression = new Transgression();
-        transgression.setTransgressionNumber(VroemUtilities.generateTransgressionNumber());
+        transgression.setTransgressionNumber(fineDto.transgressionNumber());
         transgression.setMulder(fineDto.isMulder());
         transgressionRepository.save(transgression);
-        return transgression.getTransgressionNumber();
+
+        return FineProcessingResult.builder().succeeded(true).build();
     }
 }

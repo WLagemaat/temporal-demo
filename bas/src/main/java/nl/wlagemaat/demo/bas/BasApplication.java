@@ -1,13 +1,13 @@
-package nl.wlagemaat.demo.vroem;
+package nl.wlagemaat.demo.bas;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class VroemApplication {
+public class BasApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(VroemApplication.class, args);
+		SpringApplication.run(BasApplication.class, args);
 	}
 
 }
