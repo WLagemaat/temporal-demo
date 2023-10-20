@@ -36,23 +36,12 @@ public class MessageRabbitMQTest {
         }
     }
 
-    @Test
-    public void testString() {
-        try {
-            rabbitTemplate.convertAndSend(queueName, "Message test");
-        } catch (AmqpConnectException e) {
-            // ignore - rabbit is not running
-        }
-    }
-
-
 
     private FineDto.FineDtoBuilder generateDefaultFine(){
         return FineDto.builder()
                 .party(Party.HANS)
                 .isMulder(doesPass(70))
-                .validOdds(5)
-                .transgressionNumber(generateTransgressionNumber())
+                .validOdds(97)
                 .cvomTechnicalErrorOdds(5)
                 .mulderTechnicalErrorOdds(5)
                 .wormTechnicalErrorOdds(5)

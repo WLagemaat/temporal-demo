@@ -3,6 +3,7 @@ package nl.wlagemaat.demo.vroem.workflow;
 import io.temporal.activity.ActivityOptions;
 import lombok.val;
 import nl.wlagemaat.demo.vroem.model.FineDto;
+import nl.wlagemaat.demo.vroem.model.ValidatedFineDto;
 import nl.wlagemaat.demo.vroem.workflow.vroemflow.activity.CheckRDWActivity;
 import nl.wlagemaat.demo.vroem.workflow.vroemflow.activity.ValidateTransgressionActivity;
 
@@ -24,9 +25,13 @@ public class VroemWorkflowImpl implements VroemWorkflow {
     @Override
     public void processTransgression(FineDto fine) {
         val result = validateTransgressionActivity.validateFine(fine);
-
         if(result.succeeded()){
-            checkRDWActivity.determineLicenseplate(fine);
+            val validatedFine = ValidatedFineDto.builder()
+                    .fineInput(fine)
+                    .transgressionNumber(result.transgressionNumber())
+                    .build();
+
+            checkRDWActivity.determineLicenseplate(validatedFine);
         }
 
     }

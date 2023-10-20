@@ -8,7 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @UtilityClass
 public class VroemUtilities {
 
-    Faker faker = new Faker();
+    private static final Faker faker = new Faker();
 
     /**
      * Randomized in percentages

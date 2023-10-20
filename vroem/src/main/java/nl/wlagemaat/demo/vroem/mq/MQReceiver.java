@@ -49,16 +49,18 @@ public class MQReceiver {
     }
 
     public void receiveMessage(FineDto input) {
-        System.out.println("Received TransgressionDto <" + input + ">");
+        System.out.println("Received FineDto <" + input + ">");
         fineIntakeWorkflowService.intake(input);
     }
 
     public void receiveMessage(String message) {
-        System.out.println("Received Message <" + message + ">");
+        System.out.println("Received String Message <" + message + ">");
+        FineDto fine = jsonMapper.parseJson(message, FineDto.class);
+        fineIntakeWorkflowService.intake(fine);
     }
     public void receiveMessage(Message message) {
         String jsonValue = new String(message.getBody(), UTF_8);
-        System.out.println("Received Message <" + jsonValue + ">");
+        System.out.println("Received JSON Message <" + jsonValue + ">");
 
         FineDto fine = jsonMapper.parseJson(jsonValue, FineDto.class);
         fineIntakeWorkflowService.intake(fine);

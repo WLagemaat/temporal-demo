@@ -8,9 +8,9 @@ import nl.wlagemaat.demo.vroem.model.FineProcessingResult;
 @ActivityInterface
 public interface ValidateTransgressionActivity extends VroemActivityMarker {
 	
-	@ActivityMethod(name = "Retrieve additional data from other systems for bulk migration")
+	@ActivityMethod(name = "Validate the transgression for completeness")
     FineProcessingResult validateFine(FineDto transgression);
 	
-	@ActivityMethod(name = "Return enrichment failed result for bulk migration")
+	@ActivityMethod(name = "Return validation failed for the fine")
     FineProcessingResult recover(FineDto transgression, String exceptionType, String msg);
 }

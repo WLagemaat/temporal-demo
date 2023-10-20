@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nl.wlagemaat.demo.vroem.exception.TechnicalRdwError;
 import nl.wlagemaat.demo.vroem.model.FineDto;
 import nl.wlagemaat.demo.vroem.model.FineProcessingResult;
+import nl.wlagemaat.demo.vroem.model.ValidatedFineDto;
 import nl.wlagemaat.demo.vroem.mq.MQClient;
 import nl.wlagemaat.demo.vroem.repository.TransgressionRepository;
 import nl.wlagemaat.demo.vroem.repository.entities.Transgression;
@@ -16,24 +17,24 @@ import static nl.wlagemaat.demo.vroem.util.VroemUtilities.doesPass;
 @RequiredArgsConstructor
 public class RdwService {
 
-    TransgressionRepository transgressionRepository;
-    MQClient mqClient;
+    private final TransgressionRepository transgressionRepository;
+    private final MQClient mqClient;
 
     /**
      * Determines if the licenseplate is known or that a BAS-TASK has to be created
      */
-    public FineProcessingResult determineLicenseplate(final FineDto fineDto){
-        var resultaat = FineProcessingResult.builder().transgressionNumber(fineDto.transgressionNumber());
-        if(doesPass(fineDto.rdwOdds())){
+    public FineProcessingResult determineLicenseplate(final ValidatedFineDto validatedFineDto){
+        var resultaat = FineProcessingResult.builder().transgressionNumber(validatedFineDto.transgressionNumber());
+        if(doesPass(validatedFineDto.fineInput().rdwOdds())){
             resultaat.succeeded(true);
-            saveLicensePlate(fineDto);
+            saveLicensePlate(validatedFineDto.transgressionNumber());
         } else {
-            createBasTask(fineDto);
+            createBasTask(validatedFineDto.transgressionNumber());
             resultaat.isManualTask(true);
             resultaat.succeeded(true);
 
         }
-        if(!doesPass(fineDto.rdwTechnicalErrorOdds())){
+        if(!doesPass(validatedFineDto.fineInput().rdwTechnicalErrorOdds())){
             throw new TechnicalRdwError("RDW not reachable!");
         }
         return resultaat.build();
@@ -45,14 +46,14 @@ public class RdwService {
         transgressionRepository.save(transgression);
     }
 
-    private void saveLicensePlate(final FineDto fineDto){
-        Transgression transgression = transgressionRepository.findByTransgressionNumber(fineDto.transgressionNumber());
+    private void saveLicensePlate(final String transgressionNumber){
+        Transgression transgression = transgressionRepository.findByTransgressionNumber(transgressionNumber);
         var licensePlate = generateLicensePlate();
         transgression.setLicensePlate(licensePlate);
         transgressionRepository.save(transgression);
     }
 
-    private void createBasTask(FineDto fineDto){
-        mqClient.sendBasTask(fineDto.transgressionNumber());
+    private void createBasTask(final String transgressionNumber){
+        mqClient.sendBasTask(transgressionNumber);
     }
 }

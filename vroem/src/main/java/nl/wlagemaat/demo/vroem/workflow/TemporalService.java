@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 import static java.time.Duration.ofMinutes;
 import static java.time.Duration.ofSeconds;
@@ -71,11 +72,11 @@ public class TemporalService implements InitializingBean {
         return WorkflowClient.newInstance(WorkflowServiceStubs.newServiceStubs(stubOptions), clientOptions);
     }
 
-    public VroemWorkflowImpl runnableVroemWorkFlow() {
+    public VroemWorkflow runnableVroemWorkFlow() {
         return getWorkflowClient()
-                .newWorkflowStub(VroemWorkflowImpl.class, WorkflowOptions.newBuilder()
+                .newWorkflowStub(VroemWorkflow.class, WorkflowOptions.newBuilder()
                         .setTaskQueue(VROEM_TASK_QUEUE)
-                        .setWorkflowId("AA-BB-CC")
+                        .setWorkflowId(UUID.randomUUID().toString())
 //                        .setRetryOptions() <-- for the whole flow, not an activity
                         .build());
     }
