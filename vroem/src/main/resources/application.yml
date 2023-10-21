@@ -43,3 +43,6 @@ app:
 flyway:
   user=postgres
   password=postgres
+
+server:
+  port: 8081

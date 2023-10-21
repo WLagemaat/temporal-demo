@@ -40,6 +40,7 @@ public class VroemWorkflowImpl implements VroemWorkflow {
         if(result.isManualTask()){
             ManualTaskWorkFlow manualTaskWorkFlow = Workflow.newChildWorkflowStub(ManualTaskWorkFlow.class, ManualTaskFlowOptions.getOptions());
             Promise<TaskProcessingResult> taskResult = Async.function(manualTaskWorkFlow::processTask, enrichedFine);
+            taskResult.get();
         }
 
 
