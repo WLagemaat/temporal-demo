@@ -1,0 +1,16 @@
+POST http://localhost:8081/fine-intake
+Accept: application/json
+Content-Type: application/json
+
+{
+  "transgressionNumber": "-",
+  "validOdds": 95,
+  "rdwOdds": 1,
+  "rdwTechnicalErrorOdds": 3,
+  "isMulder": true,
+  "mulderTechnicalErrorOdds": 5,
+  "wormTechnicalErrorOdds": 5,
+  "svenTechnicalErrorOdds": 5,
+  "cvomTechnicalErrorOdds": 5,
+  "party": "HANS"
+}

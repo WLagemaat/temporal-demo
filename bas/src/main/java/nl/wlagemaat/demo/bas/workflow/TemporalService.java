@@ -12,24 +12,22 @@ import io.temporal.workflow.Workflow;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.wlagemaat.demo.bas.workflow.manualtasks.activity.ManualTaskActivityMarker;
-import nl.wlagemaat.demo.bas.workflow.util.TemporalDataConverterHelper;
+import nl.wlagemaat.demo.commons.temporal.util.TemporalDataConverterHelper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 import static java.time.Duration.ofMinutes;
 import static java.time.Duration.ofSeconds;
+import static nl.wlagemaat.demo.clients.ManualTaskWorkFlow.MANUAL_TASK_QUEUE;
+import static nl.wlagemaat.demo.clients.ManualTaskWorkFlow.NAMESPACE_MANUAL;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TemporalService implements InitializingBean {
-
-    public static final String PRE_INTAKE_NAMESPACE = "PRE_INTAKE";
-    public static final String MANUAL_TASK_QUEUE = "MANUAL_TASK_QUEUE";
 
     private final List<ManualTaskActivityMarker> manualTaskActivityImplementations;
 
@@ -63,7 +61,7 @@ public class TemporalService implements InitializingBean {
                 .build();
         var clientOptions = WorkflowClientOptions.newBuilder()
                 .setDataConverter(TemporalDataConverterHelper.createOmniscientJsonDataConverter())
-                .setNamespace(PRE_INTAKE_NAMESPACE)
+                .setNamespace(NAMESPACE_MANUAL)
                 .build();
         return WorkflowClient.newInstance(WorkflowServiceStubs.newServiceStubs(stubOptions), clientOptions);
     }

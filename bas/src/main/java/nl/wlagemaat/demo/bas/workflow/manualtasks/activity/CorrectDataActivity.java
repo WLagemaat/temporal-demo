@@ -2,7 +2,7 @@ package nl.wlagemaat.demo.bas.workflow.manualtasks.activity;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import nl.wlagemaat.demo.bas.model.FineDto;
+import nl.wlagemaat.demo.clients.model.FineDto;
 
 @ActivityInterface
 public interface CorrectDataActivity extends ManualTaskActivityMarker {

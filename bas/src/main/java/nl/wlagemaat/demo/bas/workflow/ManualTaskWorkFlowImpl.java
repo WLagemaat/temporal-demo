@@ -2,9 +2,9 @@ package nl.wlagemaat.demo.bas.workflow;
 
 import io.temporal.workflow.Workflow;
 import lombok.extern.slf4j.Slf4j;
-import nl.wlagemaat.demo.bas.model.FineDto;
-import nl.wlagemaat.demo.bas.model.TaskProcessingResult;
 import nl.wlagemaat.demo.bas.workflow.manualtasks.activity.CorrectDataActivity;
+import nl.wlagemaat.demo.clients.model.FineDto;
+import nl.wlagemaat.demo.clients.model.TaskProcessingResult;
 
 import java.time.Duration;
 
