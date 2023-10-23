@@ -23,9 +23,9 @@ spring:
       enabled: false
     host: localhost
     port: 5672
-  sql:
-    init:
-      platform: postgres
+#  sql:
+#    init:
+#      platform: postgres
   jpa:
     database: POSTGRESQL
 #    hibernate.ddl-auto: create-drop
@@ -43,3 +43,6 @@ app:
 flyway:
   user=postgres
   password=postgres
+
+server:
+  port: 8081

@@ -10,17 +10,17 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class VroemUtilities {
 
-    Faker faker = new Faker();
+    private static final Faker faker = new Faker();
 
     /**
      * Randomized in percentages
-     * @param kans 1-100 %
+     * @param odds 1-100 %
      * @return true als het succeeded is
      */
-    public static boolean doesPass(Integer kans){
+    public static boolean doesPass(String reason, Integer odds){
         int dice = ThreadLocalRandom.current().nextInt(100);
-        log.info("doesPass odds:{}, diced: {} ",kans,dice);
-        return dice <= kans;
+        log.info("{} odds:{}, diced: {} ", reason, odds, dice);
+        return dice <= odds;
     }
 
     /**

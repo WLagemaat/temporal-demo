@@ -1,10 +1,16 @@
 package nl.wlagemaat.demo.vroem.workflow;
 
+import com.uber.m3.tally.RootScopeBuilder;
+import com.uber.m3.tally.Scope;
+import com.uber.m3.tally.StatsReporter;
+import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.common.RetryOptions;
+import io.temporal.common.reporter.MicrometerClientStatsReporter;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.worker.Worker;
@@ -12,8 +18,9 @@ import io.temporal.worker.WorkerFactory;
 import io.temporal.workflow.Workflow;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.wlagemaat.demo.vroem.model.FineDto;
-import nl.wlagemaat.demo.vroem.workflow.util.TemporalDataConverterHelper;
+import nl.wlagemaat.demo.clients.VroemWorkflow;
+import nl.wlagemaat.demo.clients.model.FineDto;
+import nl.wlagemaat.demo.commons.temporal.util.TemporalDataConverterHelper;
 import nl.wlagemaat.demo.vroem.workflow.vroemflow.activity.VroemActivityMarker;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,15 +31,14 @@ import java.util.UUID;
 
 import static java.time.Duration.ofMinutes;
 import static java.time.Duration.ofSeconds;
+import static nl.wlagemaat.demo.clients.VroemWorkflow.PRE_INTAKE_NAMESPACE;
+import static nl.wlagemaat.demo.clients.VroemWorkflow.VROEM_TASK_QUEUE;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TemporalService implements InitializingBean {
 
-    public static final String PRE_INTAKE_NAMESPACE = "PRE_INTAKE";
-    public static final String PRE_INTAKE_QUEUE = "PRE_INTAKE_QUEUE";
-    public static final String VROEM_TASK_QUEUE = "VROEM_TASK_QUEUE";
 
     private final List<VroemActivityMarker> vroemActivityImplementations;
 
@@ -61,13 +67,24 @@ public class TemporalService implements InitializingBean {
     }
 
     private WorkflowClient getWorkflowClient() {
+        PrometheusMeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+        StatsReporter reporter = new MicrometerClientStatsReporter(registry);
+
+        // set up a new scope, report every 10 seconds
+        Scope scope = new RootScopeBuilder()
+                .reporter(reporter)
+                .reportEvery(com.uber.m3.util.Duration.ofSeconds(10));
+
         var stubOptions = WorkflowServiceStubsOptions.newBuilder()
                 .setTarget(temporalHost)
+                .setMetricsScope(scope)
                 .build();
         var clientOptions = WorkflowClientOptions.newBuilder()
+        //        .setInterceptors(new OpenTracingClientInterceptor())
                 .setDataConverter(TemporalDataConverterHelper.createOmniscientJsonDataConverter())
                 .setNamespace(PRE_INTAKE_NAMESPACE)
                 .build();
+
         return WorkflowClient.newInstance(WorkflowServiceStubs.newServiceStubs(stubOptions), clientOptions);
     }
 

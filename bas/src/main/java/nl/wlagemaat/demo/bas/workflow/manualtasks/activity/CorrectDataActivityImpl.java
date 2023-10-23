@@ -2,7 +2,7 @@ package nl.wlagemaat.demo.bas.workflow.manualtasks.activity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.wlagemaat.demo.bas.model.FineDto;
+import nl.wlagemaat.demo.clients.model.FineDto;
 import org.springframework.stereotype.Component;
 
 @Slf4j

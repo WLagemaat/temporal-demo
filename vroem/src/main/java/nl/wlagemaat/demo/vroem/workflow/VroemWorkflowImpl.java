@@ -1,14 +1,17 @@
 package nl.wlagemaat.demo.vroem.workflow;
 
+import io.temporal.common.SearchAttributeKey;
+import io.temporal.common.SearchAttributeUpdate;
 import io.temporal.workflow.Async;
 import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
-import lombok.extern.slf4j.Slf4j;
-import nl.wlagemaat.demo.vroem.model.FineDto;
-import nl.wlagemaat.demo.vroem.model.TaskProcessingResult;
+import nl.wlagemaat.demo.clients.ManualTaskWorkFlow;
+import nl.wlagemaat.demo.clients.VroemWorkflow;
+import nl.wlagemaat.demo.clients.model.FineDto;
+import nl.wlagemaat.demo.clients.model.TaskProcessingResult;
+import nl.wlagemaat.demo.clients.options.ManualTaskFlowOptions;
+import nl.wlagemaat.demo.vroem.model.FineProcessingResult;
 import nl.wlagemaat.demo.vroem.util.VroemUtilities;
-import nl.wlagemaat.demo.vroem.workflow.externalflows.ManualTaskFlowOptions;
-import nl.wlagemaat.demo.vroem.workflow.externalflows.ManualTaskWorkFlow;
 import nl.wlagemaat.demo.vroem.workflow.vroemflow.activity.CheckRDWActivity;
 import nl.wlagemaat.demo.vroem.workflow.vroemflow.activity.CreateTransgressionActivity;
 import nl.wlagemaat.demo.vroem.workflow.vroemflow.activity.ValidateTransgressionActivity;
@@ -16,21 +19,23 @@ import nl.wlagemaat.demo.vroem.workflow.vroemflow.activity.ValidateTransgression
 import static nl.wlagemaat.demo.vroem.workflow.TemporalService.defaultRetryOptions;
 import static nl.wlagemaat.demo.vroem.workflow.TemporalService.getActivity;
 
-@Slf4j
 public class VroemWorkflowImpl implements VroemWorkflow {
 
     private final ValidateTransgressionActivity validateTransgressionActivity = getActivity(ValidateTransgressionActivity.class, defaultRetryOptions());
     private final CreateTransgressionActivity createTransgressionActivity = getActivity(CreateTransgressionActivity.class, defaultRetryOptions());
     private final CheckRDWActivity checkRDWActivity = getActivity(CheckRDWActivity.class, defaultRetryOptions());
-
+//    private final
 
     @Override
     public void processTransgression(FineDto fine) {
+        Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), "init"));
         // validate
         var result = validateTransgressionActivity.validateFine(fine);
         if(!result.succeeded()) {
             return;
         }
+        Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), "validated"));
+
         String transgressionNumber = Workflow.sideEffect(String.class, VroemUtilities::generateTransgressionNumber);
         FineDto enrichedFine = getCreatedTransgression(fine, transgressionNumber);
         // store
@@ -42,10 +47,31 @@ public class VroemWorkflowImpl implements VroemWorkflow {
         if(result.isManualTask()){
             ManualTaskWorkFlow manualTaskWorkFlow = Workflow.newChildWorkflowStub(ManualTaskWorkFlow.class, ManualTaskFlowOptions.getOptions());
             Promise<TaskProcessingResult> taskResult = Async.function(manualTaskWorkFlow::processTask, enrichedFine);
-            TaskProcessingResult taskProcessResult = taskResult.get();
-            log.info(" Manual Task for {} did succeed:{}",taskProcessResult.transgressionNumber(), taskProcessResult.succeeded());
+            Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), "manual-task"));
+            var taskFinished = taskResult.get();
+            result = FineProcessingResult.builder()
+                    .transgressionNumber(taskFinished.transgressionNumber())
+                    .succeeded(taskFinished.succeeded())
+                    .build();
         }
 
+        // check if it should go to mulder or worm based on the fineDto value
+        if(result.succeeded()) {
+            if (fine.isMulder()) {
+                // send to mulder
+                Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), "to-mulder"));
+                // send to mulder
+            } else {
+                // send to worm
+                Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), "to-worm"));
+                // send to worm
+            }
+        }
+
+
+        if(!result.succeeded()) {
+            Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), "failed unexpected"));
+        }
 
     }
 

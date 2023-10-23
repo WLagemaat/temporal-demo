@@ -3,7 +3,7 @@ package nl.wlagemaat.demo.vroem.workflow;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import nl.wlagemaat.demo.vroem.model.FineDto;
+import nl.wlagemaat.demo.clients.model.FineDto;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
