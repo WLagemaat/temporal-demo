@@ -1,4 +1,4 @@
-package nl.wlagemaat.demo.vroem.service.intake;
+package nl.wlagemaat.demo.vroem.service.validate;
 
 import lombok.RequiredArgsConstructor;
 import nl.wlagemaat.demo.clients.model.FineDto;
@@ -11,7 +11,7 @@ import static nl.wlagemaat.demo.vroem.util.VroemUtilities.doesPass;
 
 @Service
 @RequiredArgsConstructor
-public class FineIntakeService {
+public class ValidateFineService {
 
     private final TransgressionRepository transgressionRepository;
 

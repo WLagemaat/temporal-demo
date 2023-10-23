@@ -1,4 +1,4 @@
-package nl.wlagemaat.demo.vroem.workflow;
+package nl.wlagemaat.demo.vroem.workflow.intakeflow;
 
 import io.temporal.common.SearchAttributeKey;
 import io.temporal.common.SearchAttributeUpdate;
@@ -6,73 +6,76 @@ import io.temporal.workflow.Async;
 import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
 import nl.wlagemaat.demo.clients.ManualTaskWorkFlow;
-import nl.wlagemaat.demo.clients.VroemWorkflow;
+import nl.wlagemaat.demo.clients.IntakeWorkflow;
 import nl.wlagemaat.demo.clients.model.FineDto;
 import nl.wlagemaat.demo.clients.model.TaskProcessingResult;
+import nl.wlagemaat.demo.clients.model.TransgressionValidationEnrichmentResult;
 import nl.wlagemaat.demo.clients.options.ManualTaskFlowOptions;
 import nl.wlagemaat.demo.vroem.model.FineProcessingResult;
 import nl.wlagemaat.demo.vroem.util.VroemUtilities;
-import nl.wlagemaat.demo.vroem.workflow.vroemflow.activity.CheckRDWActivity;
-import nl.wlagemaat.demo.vroem.workflow.vroemflow.activity.CreateTransgressionActivity;
-import nl.wlagemaat.demo.vroem.workflow.vroemflow.activity.ValidateTransgressionActivity;
+import nl.wlagemaat.demo.vroem.workflow.intakeflow.activity.CheckRDWActivity;
+import nl.wlagemaat.demo.vroem.workflow.intakeflow.activity.CreateTransgressionActivity;
+import nl.wlagemaat.demo.vroem.workflow.intakeflow.activity.ValidateTransgressionActivity;
 
 import static nl.wlagemaat.demo.vroem.workflow.TemporalService.defaultRetryOptions;
 import static nl.wlagemaat.demo.vroem.workflow.TemporalService.getActivity;
 
-public class VroemWorkflowImpl implements VroemWorkflow {
+public class IntakeWorkflowImpl implements IntakeWorkflow {
 
     private final ValidateTransgressionActivity validateTransgressionActivity = getActivity(ValidateTransgressionActivity.class, defaultRetryOptions());
     private final CreateTransgressionActivity createTransgressionActivity = getActivity(CreateTransgressionActivity.class, defaultRetryOptions());
     private final CheckRDWActivity checkRDWActivity = getActivity(CheckRDWActivity.class, defaultRetryOptions());
-//    private final
 
     @Override
-    public void processTransgression(FineDto fine) {
-        Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), "init"));
+    public TransgressionValidationEnrichmentResult transgressionIntake(FineDto fine) {
+        updateTransgressionState("init");
         // validate
-        var result = validateTransgressionActivity.validateFine(fine);
-        if(!result.succeeded()) {
-            return;
+        var validationResult = validateTransgressionActivity.validateFine(fine);
+        if(!validationResult.succeeded()) {
+            updateTransgressionState("rejected");
+            return TransgressionValidationEnrichmentResult.builder()
+                    .isValid(false)
+                    .transgressionNumber(fine.transgressionNumber())
+                    .errorMessage(validationResult.errorMessage())
+                    .build();
         }
-        Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), "validated"));
+        updateTransgressionState("validated");
 
         String transgressionNumber = Workflow.sideEffect(String.class, VroemUtilities::generateTransgressionNumber);
         FineDto enrichedFine = getCreatedTransgression(fine, transgressionNumber);
         // store
         createTransgressionActivity.createTransgression(enrichedFine);
         // check rdw
-        result = checkRDWActivity.determineLicenseplate(enrichedFine);
+        var enrichmentResult = checkRDWActivity.determineLicenseplate(enrichedFine);
 
         // check if manual task needs to be created based on the outcome of the rdw check
-        if(result.isManualTask()){
+        if(enrichmentResult.isManualTask()){
             ManualTaskWorkFlow manualTaskWorkFlow = Workflow.newChildWorkflowStub(ManualTaskWorkFlow.class, ManualTaskFlowOptions.getOptions());
             Promise<TaskProcessingResult> taskResult = Async.function(manualTaskWorkFlow::processTask, enrichedFine);
-            Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), "manual-task"));
+            updateTransgressionState("manual-task-created");
             var taskFinished = taskResult.get();
-            result = FineProcessingResult.builder()
+            enrichmentResult = FineProcessingResult.builder()
                     .transgressionNumber(taskFinished.transgressionNumber())
                     .succeeded(taskFinished.succeeded())
                     .build();
         }
 
         // check if it should go to mulder or worm based on the fineDto value
-        if(result.succeeded()) {
-            if (fine.isMulder()) {
-                // send to mulder
-                Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), "to-mulder"));
-                // send to mulder
-            } else {
-                // send to worm
-                Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), "to-worm"));
-                // send to worm
-            }
+        if(enrichmentResult.succeeded()) {
+            updateTransgressionState("enriched");
+            return TransgressionValidationEnrichmentResult.builder()
+                    .isValid(true)
+                    .transgressionNumber(fine.transgressionNumber())
+                    .isMulder(fine.isMulder())
+                    .build();
+        } else {
+            updateTransgressionState("failed unexpected");
+            return TransgressionValidationEnrichmentResult.builder()
+                    .isValid(false)
+                    .transgressionNumber(fine.transgressionNumber())
+                    .errorMessage("unexpected endstate")
+                    .build();
         }
-
-
-        if(!result.succeeded()) {
-            Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), "failed unexpected"));
-        }
-
     }
 
     private static FineDto getCreatedTransgression(FineDto fine, String transgressionNumber) {
@@ -88,5 +91,9 @@ public class VroemWorkflowImpl implements VroemWorkflow {
                 .rdwTechnicalErrorOdds(fine.rdwTechnicalErrorOdds())
                 .rdwOdds(fine.rdwOdds())
                 .build();
+    }
+
+    private void updateTransgressionState(String state) {
+        Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), state));
     }
 }

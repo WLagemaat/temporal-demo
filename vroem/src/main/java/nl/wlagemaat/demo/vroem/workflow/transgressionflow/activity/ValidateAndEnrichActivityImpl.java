@@ -1,4 +1,4 @@
-package nl.wlagemaat.demo.vroem.workflow.vroemflow.activity;
+package nl.wlagemaat.demo.vroem.workflow.transgressionflow.activity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CheckRDWActivityImpl implements CheckRDWActivity {
+public class ValidateAndEnrichActivityImpl implements ValidateAndEnrichActivity {
 	
 	private final RdwService rdwService;
 

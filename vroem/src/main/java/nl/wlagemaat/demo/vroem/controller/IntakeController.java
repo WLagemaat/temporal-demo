@@ -2,7 +2,7 @@ package nl.wlagemaat.demo.vroem.controller;
 
 import lombok.RequiredArgsConstructor;
 import nl.wlagemaat.demo.clients.model.FineDto;
-import nl.wlagemaat.demo.vroem.workflow.FineIntakeWorkflowService;
+import nl.wlagemaat.demo.vroem.service.FineIntakeWorkflowService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;

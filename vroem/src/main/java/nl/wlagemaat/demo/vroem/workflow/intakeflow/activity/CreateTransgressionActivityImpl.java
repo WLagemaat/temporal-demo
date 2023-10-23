@@ -1,9 +1,9 @@
-package nl.wlagemaat.demo.vroem.workflow.vroemflow.activity;
+package nl.wlagemaat.demo.vroem.workflow.intakeflow.activity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.wlagemaat.demo.clients.model.FineDto;
-import nl.wlagemaat.demo.vroem.service.intake.FineIntakeService;
+import nl.wlagemaat.demo.vroem.service.validate.ValidateFineService;
 import nl.wlagemaat.demo.vroem.model.FineProcessingResult;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CreateTransgressionActivityImpl implements CreateTransgressionActivity {
 	
-	private final FineIntakeService fineIntakeService;
+	private final ValidateFineService validateFineService;
 
 	@Override
 	public FineProcessingResult createTransgression(FineDto transgression) {
-		return fineIntakeService.saveTransgression(transgression);
+		return validateFineService.saveTransgression(transgression);
 	}
 }
