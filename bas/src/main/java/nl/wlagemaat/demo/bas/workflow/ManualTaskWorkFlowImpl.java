@@ -14,6 +14,11 @@ public class ManualTaskWorkFlowImpl implements ManualTaskWorkFlow {
     @Override
     public TaskProcessingResult processTask(FineDto fine) {
         var result  = correctDataActivity.correctData(fine);
+        try {
+            Thread.sleep(10_000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return TaskProcessingResult.builder()
                 .transgressionNumber(fine.transgressionNumber())
                 .succeeded(result).build();
