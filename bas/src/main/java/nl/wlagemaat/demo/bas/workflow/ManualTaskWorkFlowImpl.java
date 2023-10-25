@@ -9,8 +9,8 @@ import nl.wlagemaat.demo.clients.model.TaskProcessingResult;
 
 import java.time.Duration;
 
-import static nl.wlagemaat.demo.bas.workflow.TemporalService.defaultRetryOptions;
-import static nl.wlagemaat.demo.bas.workflow.TemporalService.getActivity;
+import static nl.wlagemaat.demo.clients.options.FlowOptions.defaultRetryOptions;
+import static nl.wlagemaat.demo.clients.options.FlowOptions.getActivity;
 
 @Slf4j
 public class ManualTaskWorkFlowImpl implements ManualTaskWorkFlow {
@@ -22,6 +22,8 @@ public class ManualTaskWorkFlowImpl implements ManualTaskWorkFlow {
         log.info("Processing manual task for transgression: {}", fine.transgressionNumber());
         var result  = correctDataActivity.correctData(fine);
         Workflow.sleep(Duration.ofMillis(100_000));
+        log.info("Finished manual task for transgression: {}", fine.transgressionNumber());
+
         return TaskProcessingResult.builder()
                 .transgressionNumber(fine.transgressionNumber())
                 .succeeded(result).build();

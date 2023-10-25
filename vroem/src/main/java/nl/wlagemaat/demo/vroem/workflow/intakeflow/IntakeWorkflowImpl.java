@@ -5,21 +5,23 @@ import io.temporal.common.SearchAttributeUpdate;
 import io.temporal.workflow.Async;
 import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
+import lombok.extern.slf4j.Slf4j;
 import nl.wlagemaat.demo.clients.ManualTaskWorkFlow;
 import nl.wlagemaat.demo.clients.IntakeWorkflow;
 import nl.wlagemaat.demo.clients.model.FineDto;
 import nl.wlagemaat.demo.clients.model.TaskProcessingResult;
 import nl.wlagemaat.demo.clients.model.TransgressionValidationEnrichmentResult;
-import nl.wlagemaat.demo.clients.options.ManualTaskFlowOptions;
+import nl.wlagemaat.demo.clients.options.FlowOptions;
 import nl.wlagemaat.demo.vroem.model.FineProcessingResult;
 import nl.wlagemaat.demo.vroem.util.VroemUtilities;
 import nl.wlagemaat.demo.vroem.workflow.intakeflow.activity.CheckRDWActivity;
 import nl.wlagemaat.demo.vroem.workflow.intakeflow.activity.CreateTransgressionActivity;
 import nl.wlagemaat.demo.vroem.workflow.intakeflow.activity.ValidateTransgressionActivity;
 
-import static nl.wlagemaat.demo.vroem.workflow.TemporalService.defaultRetryOptions;
-import static nl.wlagemaat.demo.vroem.workflow.TemporalService.getActivity;
+import static nl.wlagemaat.demo.clients.options.FlowOptions.defaultRetryOptions;
+import static nl.wlagemaat.demo.clients.options.FlowOptions.getActivity;
 
+@Slf4j
 public class IntakeWorkflowImpl implements IntakeWorkflow {
 
     private final ValidateTransgressionActivity validateTransgressionActivity = getActivity(ValidateTransgressionActivity.class, defaultRetryOptions());
@@ -50,7 +52,7 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
 
         // check if manual task needs to be created based on the outcome of the rdw check
         if(enrichmentResult.isManualTask()){
-            ManualTaskWorkFlow manualTaskWorkFlow = Workflow.newChildWorkflowStub(ManualTaskWorkFlow.class, ManualTaskFlowOptions.getOptions());
+            ManualTaskWorkFlow manualTaskWorkFlow = Workflow.newChildWorkflowStub(ManualTaskWorkFlow.class, FlowOptions.getOptions());
             Promise<TaskProcessingResult> taskResult = Async.function(manualTaskWorkFlow::processTask, enrichedFine);
             updateTransgressionState("manual-task-created");
             var taskFinished = taskResult.get();
@@ -94,6 +96,7 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
     }
 
     private void updateTransgressionState(String state) {
+        log.info("Updating transgression state to: {}", state);
         Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("TransgressionState"), state));
     }
 }

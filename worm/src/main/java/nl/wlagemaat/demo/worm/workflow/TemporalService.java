@@ -1,4 +1,4 @@
-package nl.wlagemaat.demo.bas.workflow;
+package nl.wlagemaat.demo.worm.workflow;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
@@ -8,23 +8,23 @@ import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.wlagemaat.demo.bas.workflow.manualtasks.activity.ManualTaskActivityMarker;
 import nl.wlagemaat.demo.commons.temporal.util.TemporalDataConverterHelper;
+import nl.wlagemaat.demo.worm.workflow.activity.DetermineDriverActivityMarker;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static nl.wlagemaat.demo.clients.ManualTaskWorkFlow.MANUAL_TASK_QUEUE;
-import static nl.wlagemaat.demo.clients.ManualTaskWorkFlow.NAMESPACE_MANUAL;
+import static nl.wlagemaat.demo.clients.DetermineDriverWorkflow.MANUAL_TASK_QUEUE;
+import static nl.wlagemaat.demo.clients.DetermineDriverWorkflow.NAMESPACE_MANUAL;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TemporalService implements InitializingBean {
 
-    private final List<ManualTaskActivityMarker> manualTaskActivityImplementations;
+    private final List<DetermineDriverActivityMarker> determineDriverActivityMarkers;
 
     @Value("${app.temporal.host}")
     private String temporalHost;
@@ -41,8 +41,8 @@ public class TemporalService implements InitializingBean {
         Worker worker = factory.newWorker(MANUAL_TASK_QUEUE);
 
         // Specify which Workflow implementations this Worker will support
-        worker.registerWorkflowImplementationTypes(ManualTaskWorkFlowImpl.class);
-        worker.registerActivitiesImplementations(manualTaskActivityImplementations.toArray());
+        worker.registerWorkflowImplementationTypes(DetermineDriverWorkflowImpl.class);
+        worker.registerActivitiesImplementations(determineDriverActivityMarkers.toArray());
 
         // Begin running the Worker
         factory.start();

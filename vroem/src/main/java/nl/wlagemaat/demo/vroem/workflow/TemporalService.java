@@ -18,6 +18,7 @@ import io.temporal.worker.WorkerFactory;
 import io.temporal.workflow.Workflow;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nl.wlagemaat.demo.clients.IntakeWorkflow;
 import nl.wlagemaat.demo.clients.TransgressionWorkflow;
 import nl.wlagemaat.demo.commons.temporal.util.TemporalDataConverterHelper;
 import nl.wlagemaat.demo.vroem.workflow.intakeflow.IntakeWorkflowImpl;
@@ -31,10 +32,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
-import static java.time.Duration.ofMinutes;
-import static java.time.Duration.ofSeconds;
 import static nl.wlagemaat.demo.clients.IntakeWorkflow.PRE_INTAKE_NAMESPACE;
-import static nl.wlagemaat.demo.clients.IntakeWorkflow.VROEM_TASK_QUEUE;
 import static nl.wlagemaat.demo.clients.TransgressionWorkflow.TRANSGRESSION_TASK_QUEUE;
 
 @Service
@@ -42,9 +40,15 @@ import static nl.wlagemaat.demo.clients.TransgressionWorkflow.TRANSGRESSION_TASK
 @Slf4j
 public class TemporalService implements InitializingBean {
 
+    /**
+     * For Demo purposes all the applications have a similar TemporalService class
+     * this class is responsible for starting the worker that listens to the workflow tasks
+     * <p>
+     * The worker will start a workflow when a task is received
+     */
 
     private final List<IntakeActivityMarker> intakeActivityImplementations;
-    private final List<TransgressionActivityMarker> transgressionActivityMarkers;
+    private final List<TransgressionActivityMarker> transgressionActivityImplementations;
 
     @Value("${app.temporal.host}")
     private String temporalHost;
@@ -64,22 +68,15 @@ public class TemporalService implements InitializingBean {
         Worker transgressionWorker = factory.newWorker(TRANSGRESSION_TASK_QUEUE);
 
         // Specify which Workflow implementations this Worker will support
-        transgressionWorker.registerWorkflowImplementationTypes(TransgressionWorkflowImpl.class);
-        transgressionWorker.registerActivitiesImplementations(transgressionActivityMarkers.toArray());
-
-        // Worker #2
-        // Specify the name of the Task Queue that this Worker should poll
-        Worker intakeWorker = factory.newWorker(VROEM_TASK_QUEUE);
-
-        // Specify which Workflow implementations this Worker will support
-        intakeWorker.registerWorkflowImplementationTypes(IntakeWorkflowImpl.class);
-        intakeWorker.registerActivitiesImplementations(intakeActivityImplementations.toArray());
+        transgressionWorker.registerWorkflowImplementationTypes(TransgressionWorkflowImpl.class,
+                                                                IntakeWorkflowImpl.class);
+        transgressionWorker.registerActivitiesImplementations(transgressionActivityImplementations.toArray());
+        transgressionWorker.registerActivitiesImplementations(intakeActivityImplementations.toArray());
 
         // Begin running the Workers
         factory.start();
 
         log.info("{} started for task queue: {}", transgressionWorker.getClass().getName(), TRANSGRESSION_TASK_QUEUE);
-        log.info("{} started for task queue: {}", intakeWorker.getClass().getName(), VROEM_TASK_QUEUE);
     }
 
     private WorkflowClient getWorkflowClient() {
@@ -102,26 +99,15 @@ public class TemporalService implements InitializingBean {
         return WorkflowClient.newInstance(WorkflowServiceStubs.newServiceStubs(stubOptions), clientOptions);
     }
 
+    /**
+     * A startable workflow that will start the actual intake flow
+     * @return a runnable workflow
+     */
     public TransgressionWorkflow runnableParentWorkFlow() {
         return getWorkflowClient()
                 .newWorkflowStub(TransgressionWorkflow.class, WorkflowOptions.newBuilder()
                         .setTaskQueue(TRANSGRESSION_TASK_QUEUE)
                         .setWorkflowId("PRE_INTAKE-"+ UUID.randomUUID())
                         .build());
-    }
-
-    public static <T> T getActivity(Class<T> activityInterface, RetryOptions.Builder retryOptions) {
-        return Workflow.newActivityStub(activityInterface, ActivityOptions.newBuilder()
-                .setStartToCloseTimeout(ofMinutes(10))
-                .setRetryOptions(retryOptions.validateBuildWithDefaults())
-                .build());
-    }
-
-    public static RetryOptions.Builder defaultRetryOptions() {
-        return RetryOptions.newBuilder()
-                .setInitialInterval(ofSeconds(10))
-                .setBackoffCoefficient(1.2)
-                .setMaximumInterval(ofMinutes(5))
-                .setMaximumAttempts(0);
     }
 }

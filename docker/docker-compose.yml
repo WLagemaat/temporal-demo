@@ -91,18 +91,18 @@ services:
       - 8080:8080
   prometheus:
     container_name: prometheus
-    image: prom/prometheus:v2.37.0
+    image: prom/prometheus:${PROMETHEUS_VERSION}
     ports:
       - 9090:9090
     volumes:
       - type: bind
-        source: ./deployment/prometheus/config.yml
+        source: ./deployment/prometheus/prometheus.yml
         target: /etc/prometheus/prometheus.yml
     depends_on:
       - temporal
   grafana:
     container_name: grafana
-    image: grafana/grafana:7.5.16
+    image: grafana/grafana:${GRAFANA_VERSION}
     environment:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
       - GF_AUTH_ANONYMOUS_ENABLED=true
@@ -110,12 +110,8 @@ services:
     ports:
       - 8085:3000
     volumes:
-      - type: bind
-        source: ./deployment/grafana/provisioning/datasources
-        target: /etc/grafana/provisioning/datasources
-      - type: bind
-        source: ./deployment/grafana/provisioning/dashboards
-        target: /etc/grafana/provisioning/dashboards
+      - ./deployment/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./deployment/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
       - ./deployment/grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - prometheus
