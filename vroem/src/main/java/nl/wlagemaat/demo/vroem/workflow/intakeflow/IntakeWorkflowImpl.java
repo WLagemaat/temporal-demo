@@ -18,6 +18,8 @@ import nl.wlagemaat.demo.vroem.workflow.intakeflow.activity.CheckRDWActivity;
 import nl.wlagemaat.demo.vroem.workflow.intakeflow.activity.CreateTransgressionActivity;
 import nl.wlagemaat.demo.vroem.workflow.intakeflow.activity.ValidateTransgressionActivity;
 
+import java.util.Optional;
+
 import static nl.wlagemaat.demo.clients.options.FlowOptions.defaultRetryOptions;
 import static nl.wlagemaat.demo.clients.options.FlowOptions.getActivity;
 
@@ -27,6 +29,8 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
     private final ValidateTransgressionActivity validateTransgressionActivity = getActivity(ValidateTransgressionActivity.class, defaultRetryOptions());
     private final CreateTransgressionActivity createTransgressionActivity = getActivity(CreateTransgressionActivity.class, defaultRetryOptions());
     private final CheckRDWActivity checkRDWActivity = getActivity(CheckRDWActivity.class, defaultRetryOptions());
+
+    private Optional<FineProcessingResult> rdwResult = Optional.empty();
 
     @Override
     public TransgressionValidationEnrichmentResult transgressionIntake(FineDto fine) {
@@ -44,11 +48,17 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
         updateTransgressionState("validated");
 
         String transgressionNumber = Workflow.sideEffect(String.class, VroemUtilities::generateTransgressionNumber);
+
         FineDto enrichedFine = getCreatedTransgression(fine, transgressionNumber);
-        // store
+        // store the initial transgression
         createTransgressionActivity.createTransgression(enrichedFine);
-        // check rdw
-        var enrichmentResult = checkRDWActivity.determineLicenseplate(enrichedFine);
+        // check rdw with the licenplate to determine the initial possible driver
+        checkRDWActivity.determineDriver(enrichedFine, Workflow.getInfo().getWorkflowId());
+        // wait for rdw result
+        Workflow.await(() -> rdwResult.isPresent());
+
+        var enrichmentResult = rdwResult.get();
+        updateTransgressionState("driver enriched");
 
         // check if manual task needs to be created based on the outcome of the rdw check
         if(enrichmentResult.isManualTask()){
@@ -77,6 +87,17 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
                     .transgressionNumber(fine.transgressionNumber())
                     .errorMessage("unexpected endstate")
                     .build();
+        }
+    }
+
+    @Override
+    public void driverByRDW(String driver) {
+        log.info("Driver by RDW: {}", driver);
+        var result = FineProcessingResult.builder().succeeded(true);
+        if(driver.equalsIgnoreCase("unknown")){
+            rdwResult = Optional.of(result.isManualTask(true).build());
+        } else {
+            rdwResult = Optional.of(result.isManualTask(false).value(driver).build());
         }
     }
 

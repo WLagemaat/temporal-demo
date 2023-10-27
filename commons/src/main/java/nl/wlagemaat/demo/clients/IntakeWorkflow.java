@@ -1,5 +1,6 @@
 package nl.wlagemaat.demo.clients;
 
+import io.temporal.workflow.SignalMethod;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 import nl.wlagemaat.demo.clients.model.FineDto;
@@ -13,4 +14,7 @@ public interface IntakeWorkflow {
 
     @WorkflowMethod
     TransgressionValidationEnrichmentResult transgressionIntake(FineDto fine);
+
+    @SignalMethod(name = "driverByRDWSignal")
+    void driverByRDW(String driver);
 }

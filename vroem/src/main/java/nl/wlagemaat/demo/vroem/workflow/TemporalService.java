@@ -9,13 +9,11 @@ import io.temporal.activity.ActivityOptions;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.common.RetryOptions;
 import io.temporal.common.reporter.MicrometerClientStatsReporter;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
-import io.temporal.workflow.Workflow;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.wlagemaat.demo.clients.IntakeWorkflow;
@@ -24,7 +22,6 @@ import nl.wlagemaat.demo.commons.temporal.util.TemporalDataConverterHelper;
 import nl.wlagemaat.demo.vroem.workflow.intakeflow.IntakeWorkflowImpl;
 import nl.wlagemaat.demo.vroem.workflow.intakeflow.activity.IntakeActivityMarker;
 import nl.wlagemaat.demo.vroem.workflow.transgressionflow.TransgressionWorkflowImpl;
-import nl.wlagemaat.demo.vroem.workflow.transgressionflow.activity.TransgressionActivityMarker;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -48,15 +45,12 @@ public class TemporalService implements InitializingBean {
      */
 
     private final List<IntakeActivityMarker> intakeActivityImplementations;
-    private final List<TransgressionActivityMarker> transgressionActivityImplementations;
 
     @Value("${app.temporal.host}")
     private String temporalHost;
 
     /**
-     * Start to listen to Workflow tasks after all beans are set and create 2 workers
-     * worker 1: The parent flow that will start the intake flow -> vroem -> rdw etc etc
-     * worker 2: the actual Vroem.part1 flow - validation and enrichment of the transgression
+     * Start to listen to Workflow tasks after all beans are set and create 1 worker that wil listen to 2 flows
      */
     @Override
     public void afterPropertiesSet() {
@@ -70,7 +64,6 @@ public class TemporalService implements InitializingBean {
         // Specify which Workflow implementations this Worker will support
         transgressionWorker.registerWorkflowImplementationTypes(TransgressionWorkflowImpl.class,
                                                                 IntakeWorkflowImpl.class);
-        transgressionWorker.registerActivitiesImplementations(transgressionActivityImplementations.toArray());
         transgressionWorker.registerActivitiesImplementations(intakeActivityImplementations.toArray());
 
         // Begin running the Workers
@@ -79,7 +72,38 @@ public class TemporalService implements InitializingBean {
         log.info("{} started for task queue: {}", transgressionWorker.getClass().getName(), TRANSGRESSION_TASK_QUEUE);
     }
 
-    private WorkflowClient getWorkflowClient() {
+    /**
+     * A runnable workflow that will start the actual intake flow
+     * @return a runnable workflow
+     */
+    public TransgressionWorkflow runnableParentWorkFlow() {
+        return getWorkflowClient()
+                .newWorkflowStub(TransgressionWorkflow.class, WorkflowOptions.newBuilder()
+                        .setTaskQueue(TRANSGRESSION_TASK_QUEUE)
+                        .setWorkflowId("PRE_INTAKE-"+ UUID.randomUUID())
+                        .build());
+    }
+
+    /**
+     * get a workflow that is running
+     * @return a runnable workflow
+     */
+    public IntakeWorkflow runningIntakeFlow(String workflowId) {
+        return getWorkflowClient()
+                .newWorkflowStub(IntakeWorkflow.class, WorkflowOptions.newBuilder()
+                        .setTaskQueue(TRANSGRESSION_TASK_QUEUE)
+                        .setWorkflowId(workflowId)
+                        .build());
+    }
+
+    /**
+     * Create a workflow client that will be used to start the workflow
+     * <p>
+     * Potential boilerplate code that could go to commons
+     * <p>
+     * @return a workflow client
+     */
+    public WorkflowClient getWorkflowClient() {
         PrometheusMeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
         StatsReporter reporter = new MicrometerClientStatsReporter(registry);
 
@@ -97,17 +121,5 @@ public class TemporalService implements InitializingBean {
                 .build();
 
         return WorkflowClient.newInstance(WorkflowServiceStubs.newServiceStubs(stubOptions), clientOptions);
-    }
-
-    /**
-     * A startable workflow that will start the actual intake flow
-     * @return a runnable workflow
-     */
-    public TransgressionWorkflow runnableParentWorkFlow() {
-        return getWorkflowClient()
-                .newWorkflowStub(TransgressionWorkflow.class, WorkflowOptions.newBuilder()
-                        .setTaskQueue(TRANSGRESSION_TASK_QUEUE)
-                        .setWorkflowId("PRE_INTAKE-"+ UUID.randomUUID())
-                        .build());
     }
 }

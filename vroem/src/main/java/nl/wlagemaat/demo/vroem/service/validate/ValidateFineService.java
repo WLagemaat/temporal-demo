@@ -8,6 +8,7 @@ import nl.wlagemaat.demo.vroem.repository.entities.Transgression;
 import org.springframework.stereotype.Service;
 
 import static nl.wlagemaat.demo.vroem.util.VroemUtilities.doesPass;
+import static nl.wlagemaat.demo.vroem.util.VroemUtilities.generateLicensePlate;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,7 @@ public class ValidateFineService {
         Transgression transgression = new Transgression();
         transgression.setTransgressionNumber(fineDto.transgressionNumber());
         transgression.setMulder(fineDto.isMulder());
+        transgression.setLicensePlate(generateLicensePlate());
         transgressionRepository.save(transgression);
 
         return FineProcessingResult.builder().transgressionNumber(transgression.getTransgressionNumber()).succeeded(true).build();

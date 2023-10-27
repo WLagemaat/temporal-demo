@@ -26,6 +26,7 @@ public class ManualTaskWorkFlowImpl implements ManualTaskWorkFlow {
 
         return TaskProcessingResult.builder()
                 .transgressionNumber(fine.transgressionNumber())
+                .value("Hulk")
                 .succeeded(result).build();
     }
 }

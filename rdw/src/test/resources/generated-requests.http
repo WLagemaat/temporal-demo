@@ -1,0 +1,10 @@
+###
+POST http://localhost:8090/licenseplate-holder
+Content-Type: application/json
+
+{
+    "licensePlate": "ABC-123",
+    "odds": 90,
+    "workflowId": "1234"
+}
+

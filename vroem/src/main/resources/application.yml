@@ -44,5 +44,13 @@ flyway:
   user=postgres
   password=postgres
 
+rdw:
+  request:
+    url: http://localhost:8090/licenseplate-holder
+
 server:
   port: 8081
+
+logging.level:
+  org.springframework.web: INFO
+  nl.wlagemaat.demo: DEBUG
