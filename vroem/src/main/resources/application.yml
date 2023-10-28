@@ -1,34 +1,9 @@
-
-mq:
-  queue:
-    vroem: vroem
-    bas: bas
-    worm: worm
-    sven: sven
-  topic:
-    exchange: pre-intake
-  routing:
-    key:
-      pre-intake: pre.intake.#
-      vroem: pre.intake.vroem
-      bas: pre.intake.bas
-      worm: pre.intake.worm
-      sven: pre.intake.sven
+server:
+  port: 8081
 
 spring:
-  rabbitmq:
-    username: rabbit
-    password: rabbit
-    ssl:
-      enabled: false
-    host: localhost
-    port: 5672
-#  sql:
-#    init:
-#      platform: postgres
   jpa:
     database: POSTGRESQL
-#    hibernate.ddl-auto: create-drop
     show-sql: true
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
@@ -47,9 +22,9 @@ flyway:
 rdw:
   request:
     url: http://localhost:8090/licenseplate-holder
-
-server:
-  port: 8081
+iot:
+  request:
+    url: http://localhost:8091/tier-level
 
 logging.level:
   org.springframework.web: INFO

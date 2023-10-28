@@ -1,0 +1,14 @@
+###
+POST http://localhost:8081/insurance-intake
+Accept: application/json
+Content-Type: application/json
+
+{
+  "validOdds": 95,
+  "rdwOdds": 90,
+  "rdwTechnicalErrorOdds":  5,
+  "isMinorSeverity": true,
+  "dogTechnicalErrorOdds": 5,
+  "catTechnicalErrorOdds": 5,
+  "instantPayoutTechnicalErrorOdds": 5,
+  "auditorTechnicalErrorOdds": 5}

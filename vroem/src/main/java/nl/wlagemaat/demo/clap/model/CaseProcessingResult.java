@@ -1,12 +1,13 @@
-package nl.wlagemaat.demo.clients.model;
+package nl.wlagemaat.demo.clap.model;
 
 import lombok.Builder;
 
 @Builder
-public record TaskProcessingResult(
+public record CaseProcessingResult(
         String insuranceCaseNumber,
-        String value,
         boolean succeeded,
+        boolean isManualTask,
+        String value,
         String errorMessage
 ){
 }

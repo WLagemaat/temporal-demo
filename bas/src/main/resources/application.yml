@@ -1,6 +1,0 @@
-app:
-  temporal:
-    host: ${APP_TEMPORAL_HOST:localhost:7233}
-
-server:
-  port: 8082

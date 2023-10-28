@@ -3,8 +3,8 @@ package nl.wlagemaat.demo.clients;
 import io.temporal.workflow.SignalMethod;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
-import nl.wlagemaat.demo.clients.model.FineDto;
-import nl.wlagemaat.demo.clients.model.TransgressionValidationEnrichmentResult;
+import nl.wlagemaat.demo.clients.model.InsuranceCaseDto;
+import nl.wlagemaat.demo.clients.model.InsuranceCaseValidationEnrichmentResult;
 
 @WorkflowInterface
 public interface IntakeWorkflow {
@@ -13,8 +13,11 @@ public interface IntakeWorkflow {
     String VROEM_TASK_QUEUE = "VROEM_TASK_QUEUE";
 
     @WorkflowMethod
-    TransgressionValidationEnrichmentResult transgressionIntake(FineDto fine);
+    InsuranceCaseValidationEnrichmentResult insuranceCaseIntake(InsuranceCaseDto fine);
 
     @SignalMethod(name = "driverByRDWSignal")
     void driverByRDW(String driver);
+
+    @SignalMethod(name = "tierLevelByIOTSignal")
+    void insuranceTier(int tierLevel);
 }

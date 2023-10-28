@@ -3,10 +3,10 @@ package nl.wlagemaat.demo.clients.model;
 import lombok.Builder;
 
 @Builder
-public record TaskProcessingResult(
+public record InsuranceCaseValidationEnrichmentResult(
         String insuranceCaseNumber,
-        String value,
-        boolean succeeded,
+        boolean isValid,
+        boolean isMinorSeverity,
         String errorMessage
 ){
 }
