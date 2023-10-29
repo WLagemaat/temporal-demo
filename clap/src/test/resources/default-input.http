@@ -7,7 +7,7 @@ Content-Type: application/json
   "validOdds": 95,
   "rdwOdds": 90,
   "rdwTechnicalErrorOdds":  5,
-  "isMinorSeverity": true,
+  "isMinorSeverity": false,
   "dogTechnicalErrorOdds": 5,
   "catTechnicalErrorOdds": 5,
   "instantPayoutTechnicalErrorOdds": 5,

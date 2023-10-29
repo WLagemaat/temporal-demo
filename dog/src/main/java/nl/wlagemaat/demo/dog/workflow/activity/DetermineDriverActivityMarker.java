@@ -1,4 +1,4 @@
-package nl.wlagemaat.demo.worm.workflow.activity;
+package nl.wlagemaat.demo.dog.workflow.activity;
 
 /**
  * This just helps us with Spring injecting all activity implementations

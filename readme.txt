@@ -4,7 +4,7 @@ mvn -f ./mass/pom.xml spring-boot:run
 mvn -f ./rdw/pom.xml spring-boot:run
 mvn -f ./iot/pom.xml spring-boot:run
 mvn -f ./exe/pom.xml spring-boot:run
-
+mvn -f ./dog/pom.xml spring-boot:run
 
 
 http://localhost:8080 				- Temporal Web UI

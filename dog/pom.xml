@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>nl.wlagemaat.demo</groupId>
-	<artifactId>worm</artifactId>
+	<artifactId>dog</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Worm</name>
-	<description>Worm Demo project with Temporal based on Pre-Intake</description>
+	<name>Dog</name>
+	<description>Demo project: Determination Owner Good</description>
 	<properties>
 		<java.version>21</java.version>
 		<commons-version>1.0</commons-version>

@@ -6,15 +6,15 @@ import io.temporal.workflow.Async;
 import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
 import lombok.extern.slf4j.Slf4j;
-import nl.wlagemaat.demo.clap.workflow.intakeflow.activity.*;
-import nl.wlagemaat.demo.clients.ManualTaskWorkFlow;
-import nl.wlagemaat.demo.clients.IntakeWorkflow;
-import nl.wlagemaat.demo.clients.model.InsuranceCaseDto;
-import nl.wlagemaat.demo.clients.model.TaskProcessingResult;
-import nl.wlagemaat.demo.clients.model.InsuranceCaseValidationEnrichmentResult;
-import nl.wlagemaat.demo.commons.temporal.util.options.FlowOptions;
 import nl.wlagemaat.demo.clap.model.CaseProcessingResult;
 import nl.wlagemaat.demo.clap.util.VroemUtilities;
+import nl.wlagemaat.demo.clap.workflow.intakeflow.activity.*;
+import nl.wlagemaat.demo.clients.IntakeWorkflow;
+import nl.wlagemaat.demo.clients.ManualTaskWorkFlow;
+import nl.wlagemaat.demo.clients.model.InsuranceCaseDto;
+import nl.wlagemaat.demo.clients.model.InsuranceCaseValidationEnrichmentResult;
+import nl.wlagemaat.demo.clients.model.TaskProcessingResult;
+import nl.wlagemaat.demo.commons.temporal.util.options.FlowOptions;
 
 import java.util.Optional;
 
@@ -38,7 +38,7 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
         updateInsuranceCaseState("init");
         // validate
         var validationResult = validateInsuranceCaseActivity.validateCase(insuranceCase);
-        if(!validationResult.succeeded()) {
+        if (!validationResult.succeeded()) {
             updateInsuranceCaseState("rejected");
             return InsuranceCaseValidationEnrichmentResult.builder()
                     .isValid(false)
@@ -72,7 +72,7 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
         updateInsuranceCaseState("tier-level");
 
         // check if manual task needs to be created based on the outcome of the rdw check
-        if(enrichmentResult.isManualTask()){
+        if (enrichmentResult.isManualTask()) {
             ManualTaskWorkFlow manualTaskWorkFlow = Workflow.newChildWorkflowStub(ManualTaskWorkFlow.class, FlowOptions.getOptions());
             Promise<TaskProcessingResult> taskResult = Async.function(manualTaskWorkFlow::processTask, enrichedCase);
             updateInsuranceCaseState("manual-task-created");
@@ -84,7 +84,7 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
         }
 
         // check if the case is correctly enriched
-        if(enrichmentResult.succeeded()) {
+        if (enrichmentResult.succeeded()) {
             updateInsuranceCaseState("enriched");
             return InsuranceCaseValidationEnrichmentResult.builder()
                     .isValid(true)
@@ -105,7 +105,7 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
     public void driverByRDW(String driver) {
         log.info("Driver by RDW: {}", driver);
         var result = CaseProcessingResult.builder().succeeded(true);
-        if(driver.equalsIgnoreCase("unknown")){
+        if (driver.equalsIgnoreCase("unknown")) {
             rdwResult = Optional.of(result.isManualTask(true).build());
         } else {
             rdwResult = Optional.of(result.isManualTask(false).value(driver).build());

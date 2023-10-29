@@ -1,4 +1,4 @@
-package nl.wlagemaat.demo.worm.workflow;
+package nl.wlagemaat.demo.dog.workflow;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
@@ -9,7 +9,7 @@ import io.temporal.worker.WorkerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.wlagemaat.demo.commons.temporal.util.TemporalDataConverterHelper;
-import nl.wlagemaat.demo.worm.workflow.activity.DetermineDriverActivityMarker;
+import nl.wlagemaat.demo.dog.workflow.activity.DetermineDriverActivityMarker;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static nl.wlagemaat.demo.clients.IntakeWorkflow.CLAP_TASK_QUEUE;
 import static nl.wlagemaat.demo.clients.IntakeWorkflow.PRE_INTAKE_NAMESPACE;
 import static nl.wlagemaat.demo.clients.InsuranceCaseWorkflow.INSURANCE_CASE_TASK_QUEUE;
 
@@ -56,22 +57,45 @@ public class TemporalService implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
 
+        // Worker #1 - main Insurance Case workflow
+        createInsuranceCaseWorkFlowWorker();
+        // Worker #2 - Intake workflow
+        createIntakeWorkFlowWorker();
+    }
+
+    private void createInsuranceCaseWorkFlowWorker() {
         WorkerFactory factory = WorkerFactory.newInstance(getWorkflowClient());
 
         // Worker #1
         // Specify the name of the Task Queue that this Worker should poll
-        Worker transgressionWorker = factory.newWorker(INSURANCE_CASE_TASK_QUEUE);
+        Worker insuranceCaseWorker = factory.newWorker(INSURANCE_CASE_TASK_QUEUE);
 
         // Specify which Workflow implementations this Worker will support
-        transgressionWorker.registerWorkflowImplementationTypes(InsuranceCaseWorkflowImpl.class,
-                                                                IntakeWorkflowImpl.class);
-        transgressionWorker.registerActivitiesImplementations(intakeActivityImplementations.toArray());
+        insuranceCaseWorker.registerWorkflowImplementationTypes(InsuranceCaseWorkflowImpl.class);
 
         // Begin running the Workers
         factory.start();
 
-        log.info("{} started for task queue: {}", transgressionWorker.getClass().getName(), INSURANCE_CASE_TASK_QUEUE);
+        log.info("{} started for task queue: {}", insuranceCaseWorker.getClass().getName(), INSURANCE_CASE_TASK_QUEUE);
     }
+
+    private void createIntakeWorkFlowWorker() {
+        WorkerFactory factory = WorkerFactory.newInstance(getWorkflowClient());
+
+        // Worker #2
+        // Specify the name of the Task Queue that this Worker should poll
+        Worker insuranceCaseWorker = factory.newWorker(CLAP_TASK_QUEUE);
+
+        // Specify which Workflow implementations this Worker will support
+        insuranceCaseWorker.registerWorkflowImplementationTypes(IntakeWorkflowImpl.class);
+        insuranceCaseWorker.registerActivitiesImplementations(intakeActivityImplementations.toArray());
+
+        // Begin running the Workers
+        factory.start();
+
+        log.info("{} started for task queue: {}", insuranceCaseWorker.getClass().getName(), CLAP_TASK_QUEUE);
+    }
+
 
     /**
      * A runnable workflow that will start the actual intake flow
@@ -81,7 +105,7 @@ public class TemporalService implements InitializingBean {
         return getWorkflowClient()
                 .newWorkflowStub(InsuranceCaseWorkflow.class, WorkflowOptions.newBuilder()
                         .setTaskQueue(INSURANCE_CASE_TASK_QUEUE)
-                        .setWorkflowId("PRE_INTAKE-"+ UUID.randomUUID())
+                        .setWorkflowId("INSURANCE_CASE-"+ UUID.randomUUID())
                         .build());
     }
 
