@@ -10,10 +10,10 @@ import nl.wlagemaat.demo.clients.model.InsuranceCaseValidationEnrichmentResult;
 public interface IntakeWorkflow {
 
     String PRE_INTAKE_NAMESPACE = "PRE_INTAKE";
-    String VROEM_TASK_QUEUE = "VROEM_TASK_QUEUE";
+    String CLAP_TASK_QUEUE = "CLAP_TASK_QUEUE";
 
     @WorkflowMethod
-    InsuranceCaseValidationEnrichmentResult insuranceCaseIntake(InsuranceCaseDto fine);
+    InsuranceCaseValidationEnrichmentResult insuranceCaseIntake(InsuranceCaseDto insuranceCaseDto);
 
     @SignalMethod(name = "driverByRDWSignal")
     void driverByRDW(String driver);

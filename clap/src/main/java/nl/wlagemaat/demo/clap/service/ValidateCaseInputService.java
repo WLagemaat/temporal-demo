@@ -17,7 +17,7 @@ public class ValidateCaseInputService {
     private final InsuranceCaseRepository insuranceCaseRepository;
 
     /**
-     * Based on the supplied odds, determines if the fine is valid
+     * Based on the supplied odds, determines if the insurance case is valid
      */
     public CaseProcessingResult validate(InsuranceCaseDto insuranceCaseDto){
         var resultaat = CaseProcessingResult.builder();

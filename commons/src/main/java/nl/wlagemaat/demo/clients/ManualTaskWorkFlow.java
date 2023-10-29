@@ -11,5 +11,5 @@ public interface ManualTaskWorkFlow {
     String NAMESPACE_MANUAL = "MANUAL_FLOWS";
 
     @WorkflowMethod
-    TaskProcessingResult processTask(InsuranceCaseDto fine);
+    TaskProcessingResult processTask(InsuranceCaseDto insuranceCaseDto);
 }

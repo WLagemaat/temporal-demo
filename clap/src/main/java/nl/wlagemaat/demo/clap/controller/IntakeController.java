@@ -14,7 +14,7 @@ public class IntakeController {
     private final CaseIntakeWorkflowService caseIntakeWorkflowService;
 
      @PostMapping("/insurance-intake")
-     public void createFine(@RequestBody InsuranceCaseDto insuranceCaseDto) {
+     public void startInsuranceCase(@RequestBody InsuranceCaseDto insuranceCaseDto) {
          caseIntakeWorkflowService.intake(insuranceCaseDto);
      }
 

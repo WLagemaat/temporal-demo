@@ -12,14 +12,14 @@ import nl.wlagemaat.demo.clients.IntakeWorkflow;
 import nl.wlagemaat.demo.clients.model.InsuranceCaseDto;
 import nl.wlagemaat.demo.clients.model.TaskProcessingResult;
 import nl.wlagemaat.demo.clients.model.InsuranceCaseValidationEnrichmentResult;
-import nl.wlagemaat.demo.clients.options.FlowOptions;
+import nl.wlagemaat.demo.commons.temporal.util.options.FlowOptions;
 import nl.wlagemaat.demo.clap.model.CaseProcessingResult;
 import nl.wlagemaat.demo.clap.util.VroemUtilities;
 
 import java.util.Optional;
 
-import static nl.wlagemaat.demo.clients.options.FlowOptions.defaultRetryOptions;
-import static nl.wlagemaat.demo.clients.options.FlowOptions.getActivity;
+import static nl.wlagemaat.demo.commons.temporal.util.options.FlowOptions.defaultRetryOptions;
+import static nl.wlagemaat.demo.commons.temporal.util.options.FlowOptions.getActivity;
 
 @Slf4j
 public class IntakeWorkflowImpl implements IntakeWorkflow {
@@ -52,12 +52,12 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
         // if the workflow will restart from an earlier point, the same number will be re-used
         String insuranceCaseNumber = Workflow.sideEffect(String.class, VroemUtilities::generateInsuranceCaseNumber);
 
-        InsuranceCaseDto enrichedFine = getCreatedInsuranceCase(insuranceCase, insuranceCaseNumber);
+        InsuranceCaseDto enrichedCase = getCreatedInsuranceCase(insuranceCase, insuranceCaseNumber);
         // store the initial transgression
-        createInsuranceCaseActivity.createInsuranceCase(enrichedFine);
+        createInsuranceCaseActivity.createInsuranceCase(enrichedCase);
 
         // check rdw with the licenplate to determine the initial possible driver
-        checkRDWActivity.determineDriver(enrichedFine, Workflow.getInfo().getWorkflowId());
+        checkRDWActivity.determineDriver(enrichedCase, Workflow.getInfo().getWorkflowId());
         // wait for rdw result
         Workflow.await(() -> rdwResult.isPresent());
 
@@ -65,7 +65,7 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
         updateInsuranceCaseActivity.updateDriverInsuranceCase(insuranceCaseNumber, enrichmentResult.value());
         updateInsuranceCaseState("initial-driver");
 
-        checkInsuranceTierActivity.determineTier(enrichedFine, Workflow.getInfo().getWorkflowId());
+        checkInsuranceTierActivity.determineTier(enrichedCase, Workflow.getInfo().getWorkflowId());
         // wait for IOT result
         Workflow.await(() -> insuranceTier.isPresent());
         updateInsuranceCaseActivity.updateInsuranceTierInsuranceCase(insuranceCaseNumber, insuranceTier.get());
@@ -74,7 +74,7 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
         // check if manual task needs to be created based on the outcome of the rdw check
         if(enrichmentResult.isManualTask()){
             ManualTaskWorkFlow manualTaskWorkFlow = Workflow.newChildWorkflowStub(ManualTaskWorkFlow.class, FlowOptions.getOptions());
-            Promise<TaskProcessingResult> taskResult = Async.function(manualTaskWorkFlow::processTask, enrichedFine);
+            Promise<TaskProcessingResult> taskResult = Async.function(manualTaskWorkFlow::processTask, enrichedCase);
             updateInsuranceCaseState("manual-task-created");
             var taskFinished = taskResult.get();
             enrichmentResult = CaseProcessingResult.builder()
@@ -83,7 +83,7 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
                     .build();
         }
 
-        // check if it should go to mulder or worm based on the fineDto value
+        // check if the case is correctly enriched
         if(enrichmentResult.succeeded()) {
             updateInsuranceCaseState("enriched");
             return InsuranceCaseValidationEnrichmentResult.builder()

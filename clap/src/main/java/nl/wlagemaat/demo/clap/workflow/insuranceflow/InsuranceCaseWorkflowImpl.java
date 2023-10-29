@@ -14,14 +14,14 @@ public class InsuranceCaseWorkflowImpl implements InsuranceCaseWorkflow {
 
     /**
      * This workflow mainly controls child workflows which can be distributed among teams and applications
-     * @param fine the actual input
+     * @param insuranceCaseDto the actual input
      */
     @Override
-    public void processInsuranceCase(InsuranceCaseDto fine) {
+    public void processInsuranceCase(InsuranceCaseDto insuranceCaseDto) {
 
         //create a childflow for CLAP, which CLAP-Worker will process
         IntakeWorkflow intakeWorkflow = Workflow.newChildWorkflowStub(IntakeWorkflow.class);
-        Promise<InsuranceCaseValidationEnrichmentResult> validationEnrichmentResult = Async.function(intakeWorkflow::insuranceCaseIntake, fine);
+        Promise<InsuranceCaseValidationEnrichmentResult> validationEnrichmentResult = Async.function(intakeWorkflow::insuranceCaseIntake, insuranceCaseDto);
         var validationResult = validationEnrichmentResult.get();
 
         if (!validationResult.isValid()) {
@@ -36,7 +36,7 @@ public class InsuranceCaseWorkflowImpl implements InsuranceCaseWorkflow {
         } else {
             // go OM-Afdoening flow
             DetermineDriverWorkflow determineDriverWorkflow = Workflow.newChildWorkflowStub(DetermineDriverWorkflow.class);
-            Promise<TaskProcessingResult> taskProcessingResultPromise = Async.function(determineDriverWorkflow::processInsuranceCase, fine);
+            Promise<TaskProcessingResult> taskProcessingResultPromise = Async.function(determineDriverWorkflow::processInsuranceCase, insuranceCaseDto);
             taskProcessingResultPromise.get();
 
         }

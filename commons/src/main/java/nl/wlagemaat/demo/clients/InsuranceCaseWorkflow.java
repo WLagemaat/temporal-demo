@@ -11,5 +11,5 @@ public interface InsuranceCaseWorkflow {
     String INSURANCE_CASE_TASK_QUEUE = "INSURANCE_CASE_TASK_QUEUE";
 
     @WorkflowMethod
-    void processInsuranceCase(InsuranceCaseDto fine);
+    void processInsuranceCase(InsuranceCaseDto insuranceCaseDto);
 }

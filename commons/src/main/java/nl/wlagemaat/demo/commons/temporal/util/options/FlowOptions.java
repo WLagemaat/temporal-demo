@@ -1,4 +1,4 @@
-package nl.wlagemaat.demo.clients.options;
+package nl.wlagemaat.demo.commons.temporal.util.options;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
