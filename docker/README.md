@@ -54,26 +54,6 @@ The default configuration file (`docker-compose.yml`) uses a PostgreSQL database
 The other configuration files in the repo spin up instances of the Temporal Server using different databases and dependencies.
 For example you can run the Temporal Server with MySQL and Elastic Search with this command:
 
-```bash
-docker-compose -f docker-compose-mysql-es.yml up
-```
-
-Here is a list of available files and the dependencies they use.
-
-| File                                   | Description                                                   |
-|----------------------------------------|---------------------------------------------------------------|
-| docker-compose.yml                     | PostgreSQL and Elasticsearch (default)                        |
-| docker-compose-tls.yml                 | PostgreSQL and Elasticsearch with TLS                         |
-| docker-compose-postgres.yml            | PostgreSQL                                                    |
-| docker-compose-cass.yml                | Cassandra                                                     |
-| docker-compose-cass-es.yml             | Cassandra and Elasticsearch                                   |
-| docker-compose-mysql.yml               | MySQL                                                         |
-| docker-compose-mysql-es.yml            | MySQL and Elasticsearch                                       |
-| docker-compose-cockroach.yml           | CockroachDB                                                   |
-| docker-compose-cockroach-es.yml        | CockroachDB and Elasticsearch                                 |
-| docker-compose-postgres-opensearch.yml | PostgreSQL and OpenSearch                                     |
-| docker-compose-multirole.yml           | PostgreSQL and Elasticsearch with mult-role Server containers |
-
 ### Using multi-role configuration
 
 First install the loki plugin (this is one time operation)
