@@ -1,8 +1,7 @@
-package nl.wlagemaat.demo.clap.workflow.insuranceflow.activity;
+package nl.wlagemaat.demo.clients.activity;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import nl.wlagemaat.demo.clap.workflow.intakeflow.activity.IntakeActivityMarker;
 import nl.wlagemaat.demo.clients.model.InsuranceCaseDto;
 
 @ActivityInterface
