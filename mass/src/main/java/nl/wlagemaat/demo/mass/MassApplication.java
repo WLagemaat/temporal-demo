@@ -1,13 +1,13 @@
-package nl.wlagemaat.demo.bas;
+package nl.wlagemaat.demo.mass;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BasApplication {
+public class MassApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BasApplication.class, args);
+		SpringApplication.run(MassApplication.class, args);
 	}
 
 }

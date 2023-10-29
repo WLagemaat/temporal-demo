@@ -1,4 +1,4 @@
-package nl.wlagemaat.demo.bas.workflow;
+package nl.wlagemaat.demo.mass.workflow;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
@@ -8,7 +8,7 @@ import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.wlagemaat.demo.bas.workflow.manualtasks.activity.ManualTaskActivityMarker;
+import nl.wlagemaat.demo.mass.workflow.manualtasks.activity.ManualTaskActivityMarker;
 import nl.wlagemaat.demo.commons.temporal.util.TemporalDataConverterHelper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;

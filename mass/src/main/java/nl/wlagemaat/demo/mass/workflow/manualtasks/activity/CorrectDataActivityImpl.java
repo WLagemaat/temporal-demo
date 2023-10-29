@@ -1,8 +1,8 @@
-package nl.wlagemaat.demo.bas.workflow.manualtasks.activity;
+package nl.wlagemaat.demo.mass.workflow.manualtasks.activity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.wlagemaat.demo.clients.model.FineDto;
+import nl.wlagemaat.demo.clients.model.InsuranceCaseDto;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class CorrectDataActivityImpl implements CorrectDataActivity {
 
 	@Override
-	public boolean correctData(FineDto transgression) {
+	public boolean correctData(InsuranceCaseDto insuranceCaseDto) {
 		return true;
 	}
 }

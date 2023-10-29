@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>nl.wlagemaat.demo</groupId>
-	<artifactId>bas</artifactId>
+	<artifactId>mass</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Bas</name>
-	<description>Demo project with Temporal based on Pre-Intake</description>
+	<name>Mass</name>
+	<description>Demo project: Manual Tasks</description>
 	<properties>
 		<java.version>21</java.version>
 		<temporal-sdk.version>1.20.1</temporal-sdk.version>
