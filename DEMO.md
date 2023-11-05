@@ -9,6 +9,11 @@ https://docs.temporal.io/
 ### result: possible different execution paths
 ![Demo_insurance_case_flow.png](docs%2FDemo_insurance_case_flow.png)
 
+## Design
+### Plotted flows and Activities
+![Design_flows_insurance_case.png](docs%2FDesign_flows_insurance_case.png)
+
+
 ## Demo:
 ### Prerequisites
 - Temporial stack is running
@@ -18,6 +23,8 @@ https://docs.temporal.io/
 
 - Feed the application with a new case
 [new case request](src%2Ftest%2Fresources%2Fdefault-input.http)
+
+
 
 ## Temporal tutorial parts
 [Part 1: Signal - async with external systems](docs%2FPart_1_Signal.md)

@@ -62,26 +62,24 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
         Workflow.await(() -> rdwResult.isPresent());
 
         var enrichmentResult = rdwResult.get();
+
+        if (enrichmentResult.isManualTask()) {
+            enrichmentResult = createManualTask(enrichedCase);
+        }
+
         updateInsuranceCaseActivity.updateDriverInsuranceCase(insuranceCaseNumber, enrichmentResult.value());
         updateInsuranceCaseState("initial-driver");
 
         checkInsuranceTierActivity.determineTier(enrichedCase, Workflow.getInfo().getWorkflowId());
         // wait for IOT result
         Workflow.await(() -> insuranceTier.isPresent());
+
+        if (enrichmentResult.isManualTask()) {
+            enrichmentResult = createManualTask(enrichedCase);
+        }
+
         updateInsuranceCaseActivity.updateInsuranceTierInsuranceCase(insuranceCaseNumber, insuranceTier.get());
         updateInsuranceCaseState("tier-level");
-
-        // check if manual task needs to be created based on the outcome of the rdw check
-        if (enrichmentResult.isManualTask()) {
-            ManualTaskWorkFlow manualTaskWorkFlow = Workflow.newChildWorkflowStub(ManualTaskWorkFlow.class, FlowOptions.getOptions());
-            Promise<TaskProcessingResult> taskResult = Async.function(manualTaskWorkFlow::processTask, enrichedCase);
-            updateInsuranceCaseState("manual-task-created");
-            var taskFinished = taskResult.get();
-            enrichmentResult = CaseProcessingResult.builder()
-                    .insuranceCaseNumber(taskFinished.insuranceCaseNumber())
-                    .succeeded(taskFinished.succeeded())
-                    .build();
-        }
 
         // check if the case is correctly enriched
         if (enrichmentResult.succeeded()) {
@@ -132,6 +130,19 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
                 .build();
     }
 
+    private CaseProcessingResult createManualTask(InsuranceCaseDto enrichedCase){
+        // check if manual task needs to be created based on the outcome of the rdw check
+
+        ManualTaskWorkFlow manualTaskWorkFlow = Workflow.newChildWorkflowStub(ManualTaskWorkFlow.class, FlowOptions.getOptions());
+        Promise<TaskProcessingResult> taskResult = Async.function(manualTaskWorkFlow::processTask, enrichedCase);
+        updateInsuranceCaseState("manual-task-created");
+        var taskFinished = taskResult.get();
+        return CaseProcessingResult.builder()
+                .insuranceCaseNumber(taskFinished.insuranceCaseNumber())
+                .succeeded(taskFinished.succeeded())
+                .build();
+
+    }
     private void updateInsuranceCaseState(String state) {
         log.info("Updating transgression state to: {}", state);
         Workflow.upsertTypedSearchAttributes(SearchAttributeUpdate.valueSet(SearchAttributeKey.forKeyword("InsuranceCaseState"), state));
