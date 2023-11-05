@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>nl.wlagemaat.demo</groupId>
 	<artifactId>iot</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>IOT</name>
 	<description>Demo project: Insurance Office Tiers</description>
 	<properties>
@@ -39,6 +39,14 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+<!--	<build>-->
+<!--		<plugins>-->
 <!--			<plugin>-->
 <!--				<groupId>org.graalvm.buildtools</groupId>-->
 <!--				<artifactId>native-maven-plugin</artifactId>-->
@@ -52,12 +60,12 @@
 <!--					</execution>-->
 <!--				</executions>-->
 <!--			</plugin>-->
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+<!--			<plugin>-->
+<!--				<groupId>org.springframework.boot</groupId>-->
+<!--				<artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--			</plugin>-->
+<!--		</plugins>-->
+<!--	</build>-->
 	<repositories>
 		<repository>
 			<id>spring-milestones</id>

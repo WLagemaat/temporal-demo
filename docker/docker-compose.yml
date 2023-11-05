@@ -100,6 +100,8 @@ services:
         target: /etc/prometheus/prometheus.yml
     depends_on:
       - temporal
+    networks:
+      - temporal-network
   grafana:
     container_name: grafana
     image: grafana/grafana:${GRAFANA_VERSION}
@@ -115,6 +117,70 @@ services:
       - ./deployment/grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - prometheus
+    networks:
+      - temporal-network
+
+#  mass:
+#    container_name: mass
+#    environment:
+#      - APP_TEMPORAL_HOST=temporal:7233
+#    image: mass:${MASS_VERSION}
+#    networks:
+#      - temporal-network
+#    ports:
+#      - "8082:8082"
+#    depends_on:
+#      - temporal
+#  clap:
+#    container_name: clap
+#    environment:
+#      - APP_TEMPORAL_HOST=temporal:7233
+#      - POSTGRES_URL=jdbc:postgresql://postgresql:5432/postgres
+#      - POSTGRES_PSWD=temporal
+#      - POSTGRES_USER=temporal
+#      - RDW_HOST=rdw:8090
+#      - IOT_HOST=iot:8091
+#    image: clap:${CLAP_VERSION}
+#    links:
+#    - postgresql
+#    - temporal
+#    networks:
+#      - temporal-network
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      - temporal
+#  rdw:
+#    container_name: rdw
+#    environment:
+#      - CLAP_URL=clap:8081
+#    image: rdw:${RDW_VERSION}
+#    networks:
+#      - temporal-network
+#    ports:
+#      - "8090:8090"
+#  iot:
+#    container_name: iot
+#    environment:
+#      - CLAP_URL=clap:8081
+#    image: iot:${IOT_VERSION}
+#    networks:
+#      - temporal-network
+#    ports:
+#      - "8091:8091"
+#  dog:
+#    container_name: Determine-Owner-Goods
+#    environment:
+#      - APP_TEMPORAL_HOST=temporal:7233
+#    image: dog:${DOG_VERSION}
+#    networks:
+#      - temporal-network
+#    ports:
+#      - "8083:8083"
+#    depends_on:
+#      - temporal
+#    links:
+#      - temporal
 networks:
   temporal-network:
     driver: bridge

@@ -5,10 +5,11 @@ Content-Type: application/json
 
 {
   "validOdds": 95,
-  "rdwOdds": 90,
+  "rdwOdds": 0,
   "rdwTechnicalErrorOdds":  5,
   "isMinorSeverity": false,
   "dogTechnicalErrorOdds": 5,
   "catTechnicalErrorOdds": 5,
   "instantPayoutTechnicalErrorOdds": 5,
-  "auditorTechnicalErrorOdds": 5}
+  "auditorTechnicalErrorOdds": 5
+}

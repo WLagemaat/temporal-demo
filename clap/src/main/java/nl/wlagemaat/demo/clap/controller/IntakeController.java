@@ -16,6 +16,8 @@ public class IntakeController {
      @PostMapping("/insurance-intake")
      public void startInsuranceCase(@RequestBody InsuranceCaseDto insuranceCaseDto) {
          caseIntakeWorkflowService.intake(insuranceCaseDto);
+
+         // return de workflow id
      }
 
 }
