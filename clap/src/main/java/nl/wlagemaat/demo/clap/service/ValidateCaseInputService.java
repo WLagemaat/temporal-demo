@@ -20,13 +20,13 @@ public class ValidateCaseInputService {
      * Based on the supplied odds, determines if the insurance case is valid
      */
     public CaseProcessingResult validate(InsuranceCaseDto insuranceCaseDto){
-        var resultaat = CaseProcessingResult.builder();
+        var result = CaseProcessingResult.builder();
         if(doesPass("isValidFine" , insuranceCaseDto.validOdds())){
-            resultaat.succeeded(true);
+            result.succeeded(true);
         } else {
-            resultaat.succeeded(false).errorMessage("Invalid Input, please check your Insurance Case");
+            result.succeeded(false).errorMessage("Invalid Input, please check your Insurance Case");
         }
-        return resultaat.build();
+        return result.build();
     }
 
     /**

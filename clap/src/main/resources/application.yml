@@ -6,9 +6,9 @@ spring:
     database: POSTGRESQL
     show-sql: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PSWD:postgres}
     driver-class-name: org.postgresql.Driver
 
 app:
@@ -16,15 +16,15 @@ app:
     host: ${APP_TEMPORAL_HOST:localhost:7233}
 
 flyway:
-  user=postgres
-  password=postgres
+  user=${POSTGRES_USER:postgres}
+  password=${POSTGRES_PSWD:postgres}
 
 rdw:
   request:
-    url: http://localhost:8090/licenseplate-holder
+    url: http://${RDW_HOST:localhost:8090}/licenseplate-holder
 iot:
   request:
-    url: http://localhost:8091/tier-level
+    url: http://${IOT_HOST:localhost:8091}/tier-level
 
 logging.level:
   org.springframework.web: INFO

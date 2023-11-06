@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>nl.wlagemaat.demo</groupId>
 	<artifactId>clap</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>CLAP</name>
 	<description>Demo project: Case Liability And Prosecution</description>
 
