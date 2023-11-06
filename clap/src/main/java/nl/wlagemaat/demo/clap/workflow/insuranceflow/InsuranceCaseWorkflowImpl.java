@@ -50,7 +50,7 @@ public class InsuranceCaseWorkflowImpl implements InsuranceCaseWorkflow {
             var insuranceCase = InsuranceCaseDto.builder().insuranceNumber(validationResult.insuranceCaseNumber()).build();
             sendToExecutionActivity.send(insuranceCase, Workflow.getInfo().getWorkflowId());
         } else {
-            // go OM-Afdoening flow
+            // go experts flow
             DetermineDriverWorkflow determineDriverWorkflow = Workflow.newChildWorkflowStub(DetermineDriverWorkflow.class, ChildWorkflowOptions.newBuilder()
                     .setWorkflowId("DRIVER-"+ UUID.randomUUID())
                     .setNamespace(NAMESPACE_MANUAL)
