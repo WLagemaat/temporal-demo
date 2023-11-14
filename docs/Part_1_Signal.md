@@ -9,12 +9,12 @@ Enriching the insurance_case by async calls to external systems
 ![part_1_async_REST.png](part_1_async_REST.png)
 
 **Activity Enrichment**
-``` 
+```java
     @ActivityMethod(name = "Retrieve license plate from RDW system")
     void determineDriver(InsuranceCaseDto insuranceCaseDto, String workflowId);
 ```
 **Application service: [RdwService.java](..%2Fsrc%2Fmain%2Fjava%2Fnl%2Fwlagemaat%2Fdemo%2Fclap%2Fservice%2FRdwService.java)** called from the Activity
-```
+```java
     public void sendDriverRequestToRdw(final InsuranceCaseDto insuranceCaseDto, String workflowId) {
         insuranceCase = repository.findInsuranceCase(insuranceCaseDto);
         ...
