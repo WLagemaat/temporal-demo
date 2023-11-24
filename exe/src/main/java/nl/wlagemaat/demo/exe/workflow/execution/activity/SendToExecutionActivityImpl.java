@@ -15,7 +15,7 @@ public class SendToExecutionActivityImpl implements SendToExecutionActivity {
 	
 	@Override
 	public void send(InsuranceCaseDto insuranceCaseDto, String workflowId) {
-		if(!doesPass(insuranceCaseDto.instantPayoutTechnicalErrorOdds())){
+		if(doesPass(insuranceCaseDto.instantPayoutTechnicalErrorOdds())){
 			throw new RuntimeException("Execution Department is not available");
 		}
 	}

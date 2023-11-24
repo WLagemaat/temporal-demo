@@ -20,9 +20,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static nl.wlagemaat.demo.clients.DetermineDriverWorkflow.MANUAL_TASK_QUEUE;
+import static nl.wlagemaat.demo.clients.DetermineDriverWorkflow.DRIVER_TASK_QUEUE;
 import static nl.wlagemaat.demo.clients.DetermineDriverWorkflow.NAMESPACE_MANUAL;
-import static nl.wlagemaat.demo.clients.ManualTaskWorkFlow.DRIVER_TASK_QUEUE;
 
 @Service
 @RequiredArgsConstructor

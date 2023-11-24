@@ -12,8 +12,7 @@ import nl.wlagemaat.demo.clients.model.InsuranceCaseDto;
 import nl.wlagemaat.demo.clients.model.TaskProcessingResult;
 import nl.wlagemaat.demo.clients.model.InsuranceCaseValidationEnrichmentResult;
 
-import static nl.wlagemaat.demo.clients.DetermineDriverWorkflow.MANUAL_TASK_QUEUE;
-import static nl.wlagemaat.demo.clients.DetermineDriverWorkflow.NAMESPACE_MANUAL;
+import static nl.wlagemaat.demo.clients.DetermineDriverWorkflow.*;
 import static nl.wlagemaat.demo.clients.IntakeWorkflow.CLAP_TASK_QUEUE;
 import static nl.wlagemaat.demo.commons.temporal.util.options.FlowOptions.defaultRetryOptions;
 import static nl.wlagemaat.demo.commons.temporal.util.options.FlowOptions.getActivity;
@@ -55,7 +54,7 @@ public class InsuranceCaseWorkflowImpl implements InsuranceCaseWorkflow {
             DetermineDriverWorkflow determineDriverWorkflow = Workflow.newChildWorkflowStub(DetermineDriverWorkflow.class, ChildWorkflowOptions.newBuilder()
                     .setWorkflowId("DRIVER-"+ extractWorkflowIdSuffix())
                     .setNamespace(NAMESPACE_MANUAL)
-                    .setTaskQueue(MANUAL_TASK_QUEUE).build());
+                    .setTaskQueue(DRIVER_TASK_QUEUE).build());
             Promise<TaskProcessingResult> taskProcessingResultPromise = Async.function(determineDriverWorkflow::processInsuranceCase, insuranceCaseDto);
             taskProcessingResultPromise.get();
 
