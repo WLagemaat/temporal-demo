@@ -15,7 +15,7 @@ public class RestService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public void sendRequestForRDWDriver(String url, Object requestDto) {
+    public void sendPostRequest(String url, Object requestDto) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
         try {
@@ -26,7 +26,5 @@ public class RestService {
         } catch (JsonProcessingException e) {
             throw new InvalidRequestError("Invalid json request object",e);
         }
-
     }
-
 }

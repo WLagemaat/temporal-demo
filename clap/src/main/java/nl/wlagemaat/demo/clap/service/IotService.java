@@ -37,8 +37,6 @@ public class IotService {
         }
 
         IotRequest requestDto = new IotRequest(insuranceCase.get().getDriver(), workflowId);
-        restService.sendRequestForRDWDriver(iotRequestUrl, requestDto);
+        restService.sendPostRequest(iotRequestUrl, requestDto);
     }
-
-
 }

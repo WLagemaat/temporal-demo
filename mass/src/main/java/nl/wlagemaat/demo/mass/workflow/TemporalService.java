@@ -24,7 +24,7 @@ import static nl.wlagemaat.demo.clients.ManualTaskWorkFlow.NAMESPACE_MANUAL;
 @Slf4j
 public class TemporalService implements InitializingBean {
 
-    private final List<ManualTaskActivityMarker> manualTaskActivityImplementations;
+    private final List<ManualTaskActivityMarker> manualTaskActivityMarker;
 
     @Value("${app.temporal.host}")
     private String temporalHost;
@@ -42,7 +42,7 @@ public class TemporalService implements InitializingBean {
 
         // Specify which Workflow implementations this Worker will support
         worker.registerWorkflowImplementationTypes(ManualTaskWorkFlowImpl.class);
-        worker.registerActivitiesImplementations(manualTaskActivityImplementations.toArray());
+        worker.registerActivitiesImplementations(manualTaskActivityMarker.toArray());
 
         // Begin running the Worker
         factory.start();

@@ -1,5 +1,6 @@
 package nl.wlagemaat.demo.dog.workflow;
 
+import io.temporal.workflow.Workflow;
 import nl.wlagemaat.demo.clients.DetermineDriverWorkflow;
 import nl.wlagemaat.demo.clients.model.InsuranceCaseDto;
 import nl.wlagemaat.demo.clients.model.TaskProcessingResult;
@@ -15,6 +16,7 @@ public class DetermineDriverWorkflowImpl implements DetermineDriverWorkflow {
     @Override
     public TaskProcessingResult processInsuranceCase(InsuranceCaseDto insuranceCaseDto) {
         determineDriverActivity.createDeterminationTask(insuranceCaseDto);
+        Workflow.sleep(1500L);
         return TaskProcessingResult.builder().insuranceCaseNumber(insuranceCaseDto.insuranceNumber()).succeeded(true).build();
 
     }

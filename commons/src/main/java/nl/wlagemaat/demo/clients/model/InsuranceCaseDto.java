@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 @Builder
 public record InsuranceCaseDto(
+        String insuranceCaseId,
         String insuranceNumber,
         Integer validOdds,
         Integer rdwOdds,
@@ -15,6 +16,7 @@ public record InsuranceCaseDto(
         Integer catTechnicalErrorOdds,
         Integer instantPayoutTechnicalErrorOdds,
         Integer auditorTechnicalErrorOdds
+
 ) implements Serializable {
 
 }

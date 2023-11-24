@@ -5,9 +5,9 @@ import io.temporal.activity.ActivityMethod;
 import nl.wlagemaat.demo.clients.model.InsuranceCaseDto;
 
 @ActivityInterface
-public interface CorrectDataActivity extends ManualTaskActivityMarker {
+public interface TaskFinishedActivity extends ManualTaskActivityMarker {
 	
-	@ActivityMethod(name = "correct the data of the transgression")
-    boolean correctData(InsuranceCaseDto insuranceCaseDto);
+	@ActivityMethod(name = "Finish the task")
+    boolean finishTask(InsuranceCaseDto insuranceCaseDto);
 
 }

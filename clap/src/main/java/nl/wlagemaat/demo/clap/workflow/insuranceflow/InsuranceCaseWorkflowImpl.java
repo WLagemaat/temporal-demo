@@ -4,7 +4,6 @@ import io.temporal.workflow.Async;
 import io.temporal.workflow.ChildWorkflowOptions;
 import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
-import nl.wlagemaat.demo.clap.workflow.intakeflow.activity.ValidateInsuranceCaseActivity;
 import nl.wlagemaat.demo.clients.DetermineDriverWorkflow;
 import nl.wlagemaat.demo.clients.IntakeWorkflow;
 import nl.wlagemaat.demo.clients.InsuranceCaseWorkflow;
@@ -12,8 +11,6 @@ import nl.wlagemaat.demo.clients.activity.SendToExecutionActivity;
 import nl.wlagemaat.demo.clients.model.InsuranceCaseDto;
 import nl.wlagemaat.demo.clients.model.TaskProcessingResult;
 import nl.wlagemaat.demo.clients.model.InsuranceCaseValidationEnrichmentResult;
-
-import java.util.UUID;
 
 import static nl.wlagemaat.demo.clients.DetermineDriverWorkflow.MANUAL_TASK_QUEUE;
 import static nl.wlagemaat.demo.clients.DetermineDriverWorkflow.NAMESPACE_MANUAL;
@@ -34,31 +31,50 @@ public class InsuranceCaseWorkflowImpl implements InsuranceCaseWorkflow {
 
         //create a childflow for CLAP, which CLAP-Worker will process
         IntakeWorkflow intakeWorkflow = Workflow.newChildWorkflowStub(IntakeWorkflow.class, ChildWorkflowOptions.newBuilder()
-                .setWorkflowId("INTAKE-"+ UUID.randomUUID())
+                .setWorkflowId("INTAKE-"+ extractWorkflowIdSuffix())
                 .setTaskQueue(CLAP_TASK_QUEUE).build());
         Promise<InsuranceCaseValidationEnrichmentResult> validationEnrichmentResult = Async.function(intakeWorkflow::insuranceCaseIntake, insuranceCaseDto);
         var validationResult = validationEnrichmentResult.get();
 
         if (!validationResult.isValid()) {
             // return to the caller the error message in case of validation error
-            // throw an exception in the weird case something else happened
             return;
         }
 
         if(validationResult.isMinorSeverity()){
-            // go instant payount execution
-            var insuranceCase = InsuranceCaseDto.builder().insuranceNumber(validationResult.insuranceCaseNumber()).build();
+            // INSTANT_PAYOUT
+            var insuranceCase = InsuranceCaseDto.builder()
+                    .insuranceNumber(validationResult.insuranceCaseNumber())
+                    .instantPayoutTechnicalErrorOdds(insuranceCaseDto.instantPayoutTechnicalErrorOdds())
+                    .build();
             sendToExecutionActivity.send(insuranceCase, Workflow.getInfo().getWorkflowId());
         } else {
-            // go experts flow
+            // EXPERT_FLOW
+
+            // Determine Owner Goods
             DetermineDriverWorkflow determineDriverWorkflow = Workflow.newChildWorkflowStub(DetermineDriverWorkflow.class, ChildWorkflowOptions.newBuilder()
-                    .setWorkflowId("DRIVER-"+ UUID.randomUUID())
+                    .setWorkflowId("DRIVER-"+ extractWorkflowIdSuffix())
                     .setNamespace(NAMESPACE_MANUAL)
                     .setTaskQueue(MANUAL_TASK_QUEUE).build());
             Promise<TaskProcessingResult> taskProcessingResultPromise = Async.function(determineDriverWorkflow::processInsuranceCase, insuranceCaseDto);
             taskProcessingResultPromise.get();
 
+            // hand over to the experts department
+            var insuranceCase = InsuranceCaseDto.builder()
+                    .insuranceNumber(validationResult.insuranceCaseNumber())
+                    .instantPayoutTechnicalErrorOdds(insuranceCaseDto.instantPayoutTechnicalErrorOdds())
+                    .build();
+            sendToExecutionActivity.send(insuranceCase, Workflow.getInfo().getWorkflowId());
         }
+    }
 
+    /**
+     * This method is used to extract the workflow id suffix from the workflow id
+     * This to create a visible correlation between parent and child flows
+     *
+     * @return the workflow id suffix
+     */
+    private String extractWorkflowIdSuffix() {
+        return Workflow.getInfo().getWorkflowId().replaceAll("INSURANCE_CASE-","");
     }
 }

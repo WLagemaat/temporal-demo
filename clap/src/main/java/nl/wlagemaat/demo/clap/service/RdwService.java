@@ -42,6 +42,6 @@ public class RdwService {
             throw new TechnicalRdwError("RDW not reachable!");
         }
         RdwRequest requestDto = new RdwRequest(insuranceCase.get().getLicensePlate(), insuranceCaseDto.rdwOdds(), workflowId);
-        restService.sendRequestForRDWDriver(rdwRequestUrl, requestDto);
+        restService.sendPostRequest(rdwRequestUrl, requestDto);
     }
 }

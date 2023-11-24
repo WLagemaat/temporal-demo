@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CorrectDataActivityImpl implements CorrectDataActivity {
+public class CreateTaskForManualFixActivityImpl implements CreateTaskForManualFixActivity {
 
 	@Override
 	public boolean correctData(InsuranceCaseDto insuranceCaseDto) {

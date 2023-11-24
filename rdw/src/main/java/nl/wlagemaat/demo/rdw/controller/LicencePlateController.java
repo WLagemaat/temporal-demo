@@ -33,6 +33,7 @@ public class LicencePlateController {
     private void determineDriverAsync(LicensePlateRequest request) {
         new Thread(() -> {
             try {
+
                 Thread.sleep(2000);
 
                 if(doesPass(request.odds())){
@@ -40,7 +41,6 @@ public class LicencePlateController {
                 } else {
                     sendResponse(new LicensePlateResponse("Unknown", request.workflowId()));
                 }
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
