@@ -6,6 +6,7 @@ spring:
     database: POSTGRESQL
     show-sql: true
   datasource:
+
     url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/postgres}
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PSWD:postgres}
@@ -16,8 +17,8 @@ app:
     host: ${APP_TEMPORAL_HOST:localhost:7233}
 
 flyway:
-  user=${POSTGRES_USER:postgres}
-  password=${POSTGRES_PSWD:postgres}
+  user: ${POSTGRES_USER:postgres}
+  password: ${POSTGRES_PSWD:postgres}
 
 rdw:
   request:

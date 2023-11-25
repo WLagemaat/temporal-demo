@@ -1,0 +1,35 @@
+version: "3.5"
+services:
+  apps-db:
+    container_name: apps-db
+    environment:
+      POSTGRES_PASSWORD: insurance
+      POSTGRES_USER: insurance
+    image: postgres:${POSTGRESQL_VERSION}
+    networks:
+      - temporal-network
+    ports:
+      - "5442:5432"
+    volumes:
+      - /var/lib/postgresql/data
+  clap:
+    container_name: clap
+    depends_on:
+      - apps-db
+    environment:
+      - POSTGRES_USER=insurance
+      - POSTGRES_PSWD=insurance
+      - POSTGRES_URL=jdbc:postgresql://apps-db:5432/postgres
+     #      - POSTGRES_URL=jdbc:postgresql://postgresql:5432/postgres
+      - RDW_HOST=rdw:8090
+      - IOT_HOST=iot:8091
+      - APP_TEMPORAL_HOST=temporal:7233
+    image: wlagemaat/clap-app:${CLAP_VERSION}
+    networks:
+      - temporal-network
+    ports:
+      - "8081:8081"
+
+networks:
+  temporal-network:
+    external: true
