@@ -76,7 +76,11 @@ services:
     tty: true
     volumes:
       - ./deployment/admin:/etc/temporal/startup/
-    command: sh /etc/temporal/startup/setup.sh
+    entrypoint: ["/bin/sh","-c"]
+    command:
+      - |
+        echo 'SETUP TEMPORAL NAMESPACE'
+        yes yes | /etc/temporal/startup/setup.sh
   temporal-ui:
     container_name: temporal-ui
     depends_on:
