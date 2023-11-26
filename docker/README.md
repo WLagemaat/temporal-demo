@@ -53,3 +53,23 @@ Some exposed endpoints:
 - http://localhost:9090 - Prometheus UI
 - http://localhost:9090/targets - Prometheus targets
 - http://localhost:8000/metrics - Server metrics
+
+## Building
+```bash
+docker build -t wlagemaat/clap-app:1.0 ../clap/.
+```
+```bash
+docker build -t wlagemaat/dog-app:1.0 ../dog/.
+```
+```bash
+docker build -t wlagemaat/exe-app:1.0 ../exe/.
+```
+```bash
+docker build -t wlagemaat/iot-app:1.0 ../iot/.
+```
+```bash
+docker build -t wlagemaat/mass-app:1.0 ../mass/.
+```
+```bash
+docker build -t wlagemaat/rdw-app:1.0 ../rdw/.
+```
