@@ -1,4 +1,7 @@
 version: "3.5"
+include:
+  - docker-compose.yml
+
 services:
   apps-db:
     container_name: apps-db
@@ -16,6 +19,7 @@ services:
     container_name: clap
     depends_on:
       - apps-db
+      - temporal
     environment:
       - POSTGRES_USER=insurance
       - POSTGRES_PSWD=insurance
@@ -25,11 +29,8 @@ services:
       - IOT_HOST=iot:8091
       - APP_TEMPORAL_HOST=temporal:7233
     image: wlagemaat/clap-app:${CLAP_VERSION}
+    restart: on-failure
     networks:
       - temporal-network
     ports:
       - "8081:8081"
-
-networks:
-  temporal-network:
-    external: true
