@@ -78,6 +78,8 @@ services:
     volumes:
       - ./deployment/admin:/etc/temporal/startup/
     entrypoint: ["/bin/sh","-c"]
+#   TODO: binnen de command bash vs sh issue
+#   /bin/bash /etc/temporal/startup/wait-for-it.sh temporal:8000 -t 60 -- echo 'Temporal is up'
     command:
       - |
         echo 'SETUP TEMPORAL NAMESPACE'
