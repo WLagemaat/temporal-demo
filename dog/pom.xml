@@ -11,7 +11,7 @@
 	<groupId>nl.wlagemaat.demo</groupId>
 	<artifactId>dog</artifactId>
 	<version>1.0</version>
-	<name>Dog</name>
+	<name>Determination Owner Good</name>
 	<description>Demo project: Determination Owner Good</description>
 	<properties>
 		<java.version>21</java.version>

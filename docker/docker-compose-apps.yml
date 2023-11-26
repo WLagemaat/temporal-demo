@@ -1,6 +1,6 @@
 version: "3.5"
 include:
-  - docker-compose.yml
+  - docker-compose-temporal.yml
 
 services:
   apps-db:
@@ -19,7 +19,7 @@ services:
     container_name: clap
     depends_on:
       - apps-db
-      - temporal
+      - temporal-admin-tools
     environment:
       - POSTGRES_USER=insurance
       - POSTGRES_PSWD=insurance
@@ -34,3 +34,53 @@ services:
       - temporal-network
     ports:
       - "8081:8081"
+  dog:
+    container_name: dog
+    depends_on:
+      - clap
+    environment:
+      - APP_TEMPORAL_HOST=temporal:7233
+    image: wlagemaat/dog-app:${DOG_VERSION}
+    restart: on-failure
+    networks:
+      - temporal-network
+  exe:
+    container_name: exe
+    depends_on:
+      - clap
+    environment:
+      - APP_TEMPORAL_HOST=temporal:7233
+    image: wlagemaat/exe-app:${EXE_VERSION}
+    restart: on-failure
+    networks:
+      - temporal-network
+  iot:
+    container_name: iot
+    depends_on:
+      - clap
+    environment:
+      - CLAP_URL=clap:8081
+    image: wlagemaat/iot-app:${IOT_VERSION}
+    restart: on-failure
+    networks:
+      - temporal-network
+  mass:
+    container_name: mass
+    depends_on:
+      - clap
+    environment:
+      - APP_TEMPORAL_HOST=temporal:7233
+    image: wlagemaat/mass-app:${IOT_VERSION}
+    restart: on-failure
+    networks:
+      - temporal-network
+  rdw:
+    container_name: rdw
+    depends_on:
+      - clap
+    environment:
+      - CLAP_URL=clap:8081
+    image: wlagemaat/rdw-app:${IOT_VERSION}
+    restart: on-failure
+    networks:
+      - temporal-network

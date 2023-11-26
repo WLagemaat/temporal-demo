@@ -1,5 +1,11 @@
 FROM eclipse-temurin:21-jre-alpine
-MAINTAINER wlagemaat.nl
-COPY target/mass-1.0.jar mass-1.0.jar
+MAINTAINER wlagemaat
+
+WORKDIR /app
+COPY ./target/mass-*.jar /app/mass-app.jar
+
 EXPOSE 8082
-ENTRYPOINT ["java","-jar","/mass-1.0.jar"]
+
+CMD ["java", "-jar", "mass-app.jar" ]
+
+# docker build -t wlagemaat/mass-app:1.0 .

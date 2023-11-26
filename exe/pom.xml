@@ -10,8 +10,8 @@
 	</parent>
 	<groupId>nl.wlagemaat.demo</groupId>
 	<artifactId>exe</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>Exe</name>
+	<version>1.0</version>
+	<name>Execution</name>
 	<description>Demo project: Send to Execution</description>
 	<properties>
 		<java.version>21</java.version>

@@ -11,7 +11,7 @@
 	<groupId>nl.wlagemaat.demo</groupId>
 	<artifactId>rdw</artifactId>
 	<version>1.0</version>
-	<name>rdw</name>
+	<name>Responsible Driverlicence Warrenty</name>
 	<description>Demo project: RDW</description>
 	<properties>
 		<java.version>21</java.version>
