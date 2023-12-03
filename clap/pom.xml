@@ -3,12 +3,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.2</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<groupId>nl.wlagemaat.demo</groupId>
+		<artifactId>demo-parent</artifactId>
+		<version>1.0</version>
 	</parent>
-	<groupId>nl.wlagemaat.demo</groupId>
+
 	<artifactId>clap</artifactId>
 	<version>1.0</version>
 	<name>CLAP</name>
@@ -16,11 +15,6 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<temporal-sdk.version>1.20.1</temporal-sdk.version>
-		<javafaker.version>0.15</javafaker.version>
-		<mapstruct.version>1.5.5.Final</mapstruct.version>
-		<jackson.version>2.15.2</jackson.version>
-		<opentelemetry.version>1.26.0</opentelemetry.version>
 	</properties>
 
 	<dependencies>
@@ -51,7 +45,6 @@
 		<dependency>
 			<groupId>io.temporal</groupId>
 			<artifactId>temporal-sdk</artifactId>
-			<version>${temporal-sdk.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
@@ -59,32 +52,13 @@
 			<version>1.11.5</version>
 		</dependency>
 		<dependency>
-			<groupId>io.gatling</groupId>
-			<artifactId>gatling-maven-plugin</artifactId>
-			<version>4.6.0</version>
-		</dependency>
-		<dependency>
-			<groupId>io.gatling.highcharts</groupId>
-			<artifactId>gatling-charts-highcharts</artifactId>
-			<version>3.9.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId>
-			<version>${mapstruct.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.javafaker</groupId>
 			<artifactId>javafaker</artifactId>
-			<version>${javafaker.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -99,21 +73,18 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.30</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-rest-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>nl.wlagemaat</groupId>
-			<artifactId>temporal-commons</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>io.opentelemetry.instrumentation</groupId>
 			<artifactId>opentelemetry-instrumentation-annotations</artifactId>
-			<version>${opentelemetry.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>nl.wlagemaat</groupId>
+			<artifactId>temporal-commons</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -127,10 +98,6 @@
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
 				<version>8.5.13</version>
-			</plugin>
-			<plugin>
-				<groupId>io.gatling</groupId>
-				<artifactId>gatling-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
