@@ -1,0 +1,6 @@
+server:
+  port: 8090
+
+management:
+  server:
+    port: 9090

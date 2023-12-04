@@ -6,7 +6,7 @@ $ docker-compose -f ./docker/docker-compose.yml up -d
 
 ## Starting applications (need to be still containerized )
 ``` bash
-$ mvn -f ./clap/pom.xml spring-boot:run 
+$ mvn -f ./clap/pom.xml spring-boot:run
 ```
 ``` bash
 $ mvn -f ./mass/pom.xml spring-boot:run

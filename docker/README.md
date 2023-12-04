@@ -56,20 +56,20 @@ Some exposed endpoints:
 
 ## Building
 ```bash
-docker build -t wlagemaat/clap-app:1.0 ../clap/.
+docker build -t wvdl/temporal-demo:clap-1 ../clap/.
 ```
 ```bash
-docker build -t wlagemaat/dog-app:1.0 ../dog/.
+docker build -t wvdl/temporal-demo:dog-1 ../dog/.
 ```
 ```bash
-docker build -t wlagemaat/exe-app:1.0 ../exe/.
+docker build -t wvdl/temporal-demo:exe-1 ../exe/.
 ```
 ```bash
-docker build -t wlagemaat/iot-app:1.0 ../iot/.
+docker build -t wvdl/temporal-demo:iot-1 ../iot/.
 ```
 ```bash
-docker build -t wlagemaat/mass-app:1.0 ../mass/.
+docker build -t wvdl/temporal-demo:mass-1 ../mass/.
 ```
 ```bash
-docker build -t wlagemaat/rdw-app:1.0 ../rdw/.
+docker build -t wvdl/temporal-demo:rdw-1 ../rdw/.
 ```

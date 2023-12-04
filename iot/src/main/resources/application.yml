@@ -1,9 +1,8 @@
-app:
-  temporal:
-    host: ${APP_TEMPORAL_HOST:localhost:7233}
-
 server:
   port: 8080
+
+callback:
+  url: http://${CLAP_URL:localhost:8081}/insurance-tier-response
 
 management:
   server:

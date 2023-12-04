@@ -4,3 +4,16 @@ app:
 
 server:
   port: 8082
+
+management:
+  server:
+    port: 8081
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"

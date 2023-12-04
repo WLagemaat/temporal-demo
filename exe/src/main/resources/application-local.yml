@@ -1,0 +1,6 @@
+server:
+  port: 8094
+
+management:
+  server:
+    port: 9094
