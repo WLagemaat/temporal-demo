@@ -20,12 +20,12 @@ The following steps will run a local instance of the Temporal Server using the d
 1. Clone this repository.
 2. Run the 
 ```shell
-docker-compose -f docker-compose-temporal.yml up -d` command.
+docker-compose -f docker-compose-temporal.yml up -d
 ```
 3. wait for the admin tool to create the namespaces 
 4. Run the 
 ```shell
-docker-compose -f docker-compose-apps.yml up -d` command.
+docker-compose -f docker-compose-apps.yml up -d
 ```
 
 After the Server has started, you can open the Temporal Web UI in your browser: [http://localhost:8080](http://localhost:8080).

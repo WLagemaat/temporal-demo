@@ -4,7 +4,7 @@ MAINTAINER wlagemaat
 WORKDIR /app
 COPY ./target/mass-*.jar /app/mass-app.jar
 
-EXPOSE 8082
+EXPOSE 8080
 
 CMD ["java", "-jar", "mass-app.jar" ]
 

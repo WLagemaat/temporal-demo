@@ -13,3 +13,14 @@ Content-Type: application/json
   "instantPayoutTechnicalErrorOdds": 5,
   "auditorTechnicalErrorOdds": 5
 }
+
+###
+POST http://localhost:8090/licenseplate-holder
+Accept: application/json
+Content-Type: application/json
+
+{
+  "licensePlate" : "AA33@@",
+  "odds": 10,
+  "workflowId":  "1111-2222-3333-4444"
+}

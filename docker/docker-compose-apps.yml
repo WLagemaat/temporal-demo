@@ -1,6 +1,4 @@
 version: "3.5"
-include:
-  - docker-compose-temporal.yml
 
 services:
   apps-db:
@@ -10,77 +8,103 @@ services:
       POSTGRES_USER: insurance
     image: postgres:${POSTGRESQL_VERSION}
     networks:
-      - temporal-network
+      temporal-network:
+        aliases:
+          - apps-db
     ports:
       - "5442:5432"
     volumes:
       - /var/lib/postgresql/data
+  rdw:
+    container_name: rdw
+    environment:
+      - CLAP_URL=clap:8080
+    image: wvdl/temporal-demo:${RDW_VERSION}
+    restart: on-failure
+    networks:
+      - temporal-network
+    ports:
+      - "8090:8080"
+      - "9090:8081"
+  iot:
+    container_name: iot
+    environment:
+      - CLAP_URL=clap:8080
+    image: wvdl/temporal-demo:${IOT_VERSION}
+    restart: on-failure
+    networks:
+      temporal-network:
+        aliases:
+          - iot
+    ports:
+      - "8091:8080"
+      - "9091:8081"
   clap:
     container_name: clap
     depends_on:
       - apps-db
-      - temporal-admin-tools
     environment:
       - POSTGRES_USER=insurance
       - POSTGRES_PSWD=insurance
       - POSTGRES_URL=jdbc:postgresql://apps-db:5432/postgres
      #      - POSTGRES_URL=jdbc:postgresql://postgresql:5432/postgres
-      - RDW_HOST=rdw:8090
-      - IOT_HOST=iot:8091
+      - RDW_HOST=rdw:8080
+      - IOT_HOST=iot:8080
       - APP_TEMPORAL_HOST=temporal:7233
-    image: wlagemaat/clap-app:${CLAP_VERSION}
+    image: wvdl/temporal-demo:${CLAP_VERSION}
     restart: on-failure
     networks:
       - temporal-network
     ports:
-      - "8081:8081"
+      - "8081:8080"
+      - "9081:8081"
   dog:
     container_name: dog
     depends_on:
       - clap
     environment:
       - APP_TEMPORAL_HOST=temporal:7233
-    image: wlagemaat/dog-app:${DOG_VERSION}
+    image: wvdl/temporal-demo:${DOG_VERSION}
     restart: on-failure
     networks:
-      - temporal-network
+      temporal-network:
+        aliases:
+          - dog
+    ports:
+      - "8093:8080"
+      - "9093:8081"
   exe:
     container_name: exe
     depends_on:
       - clap
     environment:
       - APP_TEMPORAL_HOST=temporal:7233
-    image: wlagemaat/exe-app:${EXE_VERSION}
+    image: wvdl/temporal-demo:${EXE_VERSION}
     restart: on-failure
     networks:
-      - temporal-network
-  iot:
-    container_name: iot
-    depends_on:
-      - clap
-    environment:
-      - CLAP_URL=clap:8081
-    image: wlagemaat/iot-app:${IOT_VERSION}
-    restart: on-failure
-    networks:
-      - temporal-network
+      temporal-network:
+        aliases:
+          - exe
+    ports:
+      - "8094:8080"
+      - "9094:8081"
   mass:
     container_name: mass
     depends_on:
       - clap
     environment:
       - APP_TEMPORAL_HOST=temporal:7233
-    image: wlagemaat/mass-app:${IOT_VERSION}
+    image: wvdl/temporal-demo:${MASS_VERSION}
     restart: on-failure
     networks:
-      - temporal-network
-  rdw:
-    container_name: rdw
-    depends_on:
-      - clap
-    environment:
-      - CLAP_URL=clap:8081
-    image: wlagemaat/rdw-app:${IOT_VERSION}
-    restart: on-failure
-    networks:
-      - temporal-network
+      temporal-network:
+        aliases:
+          - mass
+    ports:
+      - "8092:8080"
+      - "9092:8081"
+
+networks:
+  temporal-network:
+    name: temporal-network
+    external: true

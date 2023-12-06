@@ -56,8 +56,8 @@ services:
     networks:
       - temporal-network
     ports:
-      - 7233:7233
-      - 8000:8000
+      - "7233:7233"
+      - "8000:8000"
     labels:
       kompose.volume.type: configMap
     volumes:
@@ -70,20 +70,18 @@ services:
       - TEMPORAL_ADDRESS=temporal:7233
       - TEMPORAL_CLI_ADDRESS=temporal:7233
     image: temporalio/admin-tools:${TEMPORAL_VERSION}
-    restart: on-failure
+#    restart: on-failure
     networks:
       - temporal-network
     stdin_open: true
     tty: true
     volumes:
       - ./deployment/admin:/etc/temporal/startup/
-    entrypoint: ["/bin/sh","-c"]
-#   TODO: binnen de command bash vs sh issue
-#   /bin/bash /etc/temporal/startup/wait-for-it.sh temporal:8000 -t 60 -- echo 'Temporal is up'
-    command:
-      - |
-        echo 'SETUP TEMPORAL NAMESPACE'
-        yes yes | /etc/temporal/startup/setup.sh
+#    entrypoint: ["/bin/bash","-c"]
+#    command: echo 'SETUP TEMPORAL NAMESPACE'
+#      - |
+#        echo 'SETUP TEMPORAL NAMESPACE'
+#        /etc/temporal/startup/setup.sh
   temporal-ui:
     container_name: temporal-ui
     depends_on:
@@ -95,12 +93,12 @@ services:
     networks:
       - temporal-network
     ports:
-      - 8080:8080
+      - "8080:8080"
   prometheus:
     container_name: prometheus
     image: prom/prometheus:${PROMETHEUS_VERSION}
     ports:
-      - 9090:9090
+      - "9090:9090"
     volumes:
       - type: bind
         source: ./deployment/prometheus/prometheus.yml
@@ -117,7 +115,7 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     ports:
-      - 8085:3000
+      - "8085:3000"
     volumes:
       - ./deployment/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - ./deployment/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards

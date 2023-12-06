@@ -4,8 +4,6 @@ MAINTAINER wlagemaat
 WORKDIR /app
 COPY ./target/iot-*.jar /app/iot-app.jar
 
-EXPOSE 8094
-
 CMD ["java", "-jar", "iot-app.jar" ]
 
-# docker build -t wlagemaat/exe-app:1.0 .
+# docker build -t wlagemaat/iot-app:1.0 .

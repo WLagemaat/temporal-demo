@@ -3,7 +3,7 @@ app:
     host: ${APP_TEMPORAL_HOST:localhost:7233}
 
 server:
-  port: 8082
+  port: 8080
 
 management:
   server:
