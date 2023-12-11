@@ -25,7 +25,6 @@ services:
       - temporal-network
     ports:
       - "8090:8080"
-      - "9090:8081"
   iot:
     container_name: iot
     environment:

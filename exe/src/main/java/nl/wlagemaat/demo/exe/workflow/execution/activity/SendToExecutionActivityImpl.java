@@ -15,6 +15,10 @@ public class SendToExecutionActivityImpl implements SendToExecutionActivity {
 	
 	@Override
 	public void send(InsuranceCaseDto insuranceCaseDto, String workflowId) {
+		// the bugged version
+//		throw new RuntimeException("Execution has some weird unknown bug and fails");
+
+		// the fixed version
 		if(doesPass(insuranceCaseDto.instantPayoutTechnicalErrorOdds())){
 			throw new RuntimeException("Execution Department is not available");
 		}

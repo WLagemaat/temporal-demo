@@ -1,31 +1,26 @@
 ## Starting Temporal Stack
 
-``` bash 
-$ docker-compose -f ./docker/docker-compose.yml up -d 
-```
+todo Architecture
 
-## Starting applications (need to be still containerized )
-``` bash
-$ mvn -f ./clap/pom.xml spring-boot:run
-```
-``` bash
-$ mvn -f ./mass/pom.xml spring-boot:run
-```
-``` bash
-$ mvn -f ./rdw/pom.xml spring-boot:run
-```
-``` bash
-$ mvn -f ./iot/pom.xml spring-boot:run
-```
-``` bash
-$ mvn -f ./exe/pom.xml spring-boot:run
-```
-``` bash
-$ mvn -f ./dog/pom.xml spring-boot:run
-```
+## Standalone running Temporal & applications
+[Docker-compose setup](docker%2FREADME.md)
 
-[DEMO.md](DEMO.md)
+## The applications
+clap - dog - exe - iot - mass - rdw
 
+![Design_insurance_case_with_applications.png](docs%2FDesign_insurance_case_with_applications.png)
+
+
+## Temporal & Apps Demo -> [DEMO.md](DEMO.md)
+
+## Temporal tutorial parts
+[Part 1: Signal - async with external systems](docs%2FPart_1_Signal.md)
+
+part 2: TODO
+
+
+
+#### useful links (based on docker localhost hosted)
 - [Temporal Web UI](http://localhost:8080)
 - [Grafana dashboards](http://localhost:8085)
 - [Prometheus UI](http://localhost:9090)
