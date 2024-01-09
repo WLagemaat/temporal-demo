@@ -81,7 +81,7 @@ services:
 #    command: echo 'SETUP TEMPORAL NAMESPACE'
 #      - |
 #        echo 'SETUP TEMPORAL NAMESPACE'
-#        /etc/temporal/startup/setup.sh
+#        sh /etc/temporal/startup/setup.sh
   temporal-ui:
     container_name: temporal-ui
     depends_on:

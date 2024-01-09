@@ -3,6 +3,7 @@ package nl.wlagemaat.demo.clients;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 import nl.wlagemaat.demo.clients.model.InsuranceCaseDto;
+import nl.wlagemaat.demo.clients.model.InsuranceCaseResult;
 
 @WorkflowInterface
 public interface InsuranceCaseWorkflow {
@@ -11,5 +12,5 @@ public interface InsuranceCaseWorkflow {
     String INSURANCE_CASE_TASK_QUEUE = "INSURANCE_CASE_TASK_QUEUE";
 
     @WorkflowMethod
-    void processInsuranceCase(InsuranceCaseDto insuranceCaseDto);
+    InsuranceCaseResult processInsuranceCase(InsuranceCaseDto insuranceCaseDto);
 }

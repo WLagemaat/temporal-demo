@@ -25,7 +25,7 @@
         <java.version>21</java.version>
         <springboot.version>3.2.0</springboot.version>
         <temporal-sdk.version>1.20.1</temporal-sdk.version>
-        <commons-version>1.0</commons-version>
+        <commons-version>1.1</commons-version>
         <opentelemetry.version>1.26.0</opentelemetry.version>
         <lombok.version>1.18.30</lombok.version>
         <opentelemetry.version>1.26.0</opentelemetry.version>
@@ -57,7 +57,7 @@
                 <version>${springboot.version}</version>
             </dependency>
             <dependency>
-                <groupId>nl.wlagemaat</groupId>
+                <groupId>nl.wlagemaat.demo</groupId>
                 <artifactId>temporal-commons</artifactId>
                 <version>${commons-version}</version>
             </dependency>

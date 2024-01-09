@@ -49,7 +49,7 @@ docker-compose -f docker-compose-apps.yml up -d
 Set with the tags and names used in the docker-compose files.
 
 ```bash
-docker build -t wvdl/temporal-demo:clap-1 ../clap/.
+docker build -t wvdl/temporal-demo:clap-1.1 ../clap/.
 ```
 ```bash
 docker build -t wvdl/temporal-demo:dog-1 ../dog/.

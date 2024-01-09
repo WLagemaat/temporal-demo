@@ -86,14 +86,14 @@ public class IntakeWorkflowImpl implements IntakeWorkflow {
             updateInsuranceCaseState("enriched");
             return InsuranceCaseValidationEnrichmentResult.builder()
                     .isValid(true)
-                    .insuranceCaseNumber(insuranceCase.insuranceNumber())
+                    .insuranceCaseNumber(enrichedCase.insuranceNumber())
                     .isMinorSeverity(insuranceCase.isMinorSeverity())
                     .build();
         } else {
             updateInsuranceCaseState("failed unexpected");
             return InsuranceCaseValidationEnrichmentResult.builder()
                     .isValid(false)
-                    .insuranceCaseNumber(insuranceCase.insuranceNumber())
+                    .insuranceCaseNumber(enrichedCase.insuranceNumber())
                     .errorMessage("unexpected endstate")
                     .build();
         }

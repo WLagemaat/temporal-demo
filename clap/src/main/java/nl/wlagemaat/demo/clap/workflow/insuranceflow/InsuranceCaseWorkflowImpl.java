@@ -9,11 +9,14 @@ import nl.wlagemaat.demo.clients.IntakeWorkflow;
 import nl.wlagemaat.demo.clients.InsuranceCaseWorkflow;
 import nl.wlagemaat.demo.clients.activity.SendToExecutionActivity;
 import nl.wlagemaat.demo.clients.model.InsuranceCaseDto;
+import nl.wlagemaat.demo.clients.model.InsuranceCaseResult;
 import nl.wlagemaat.demo.clients.model.TaskProcessingResult;
 import nl.wlagemaat.demo.clients.model.InsuranceCaseValidationEnrichmentResult;
 
 import static nl.wlagemaat.demo.clients.DetermineDriverWorkflow.*;
 import static nl.wlagemaat.demo.clients.IntakeWorkflow.CLAP_TASK_QUEUE;
+import static nl.wlagemaat.demo.clients.model.Department.AUDITING_CASE_EXPERTS;
+import static nl.wlagemaat.demo.clients.model.Department.INSTANT_PAYOUT;
 import static nl.wlagemaat.demo.commons.temporal.util.options.FlowOptions.defaultRetryOptions;
 import static nl.wlagemaat.demo.commons.temporal.util.options.FlowOptions.getActivity;
 
@@ -26,7 +29,7 @@ public class InsuranceCaseWorkflowImpl implements InsuranceCaseWorkflow {
      * @param insuranceCaseDto the actual input
      */
     @Override
-    public void processInsuranceCase(InsuranceCaseDto insuranceCaseDto) {
+    public InsuranceCaseResult processInsuranceCase(InsuranceCaseDto insuranceCaseDto) {
 
         //create a childflow for CLAP, which CLAP-Worker will process
         IntakeWorkflow intakeWorkflow = Workflow.newChildWorkflowStub(IntakeWorkflow.class, ChildWorkflowOptions.newBuilder()
@@ -37,8 +40,13 @@ public class InsuranceCaseWorkflowImpl implements InsuranceCaseWorkflow {
 
         if (!validationResult.isValid()) {
             // return to the caller the error message in case of validation error
-            return;
+            return InsuranceCaseResult.builder()
+                    .insuranceCaseNumber(validationResult.insuranceCaseNumber())
+                    .errorMessage("Failed with reason:" + validationResult.errorMessage())
+                    .build();
         }
+        InsuranceCaseResult.InsuranceCaseResultBuilder insuranceCaseResult = InsuranceCaseResult.builder()
+                .insuranceCaseNumber(validationResult.insuranceCaseNumber());
 
         if(validationResult.isMinorSeverity()){
             // INSTANT_PAYOUT
@@ -47,6 +55,7 @@ public class InsuranceCaseWorkflowImpl implements InsuranceCaseWorkflow {
                     .instantPayoutTechnicalErrorOdds(insuranceCaseDto.instantPayoutTechnicalErrorOdds())
                     .build();
             sendToExecutionActivity.send(insuranceCase, Workflow.getInfo().getWorkflowId());
+            insuranceCaseResult.department(INSTANT_PAYOUT);
         } else {
             // EXPERT_FLOW
 
@@ -64,7 +73,10 @@ public class InsuranceCaseWorkflowImpl implements InsuranceCaseWorkflow {
                     .instantPayoutTechnicalErrorOdds(insuranceCaseDto.instantPayoutTechnicalErrorOdds())
                     .build();
             sendToExecutionActivity.send(insuranceCase, Workflow.getInfo().getWorkflowId());
+            insuranceCaseResult.department(AUDITING_CASE_EXPERTS);
         }
+        insuranceCaseResult.isProcessed(true);
+        return insuranceCaseResult.build();
     }
 
     /**

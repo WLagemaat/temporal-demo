@@ -87,7 +87,7 @@
 			<artifactId>opentelemetry-instrumentation-annotations</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>nl.wlagemaat</groupId>
+			<groupId>nl.wlagemaat.demo</groupId>
 			<artifactId>temporal-commons</artifactId>
 		</dependency>
 	</dependencies>
