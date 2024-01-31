@@ -49,20 +49,20 @@ docker-compose -f docker-compose-apps.yml up -d
 Set with the tags and names used in the docker-compose files.
 
 ```bash
-docker build -t wvdl/temporal-demo:clap-1.1 ../clap/.
+docker build -t wvdl/temporal-demo:clap-1.2 ../clap/.
 ```
 ```bash
-docker build -t wvdl/temporal-demo:dog-1 ../dog/.
+docker build -t wvdl/temporal-demo:dog-1.0 ../dog/.
 ```
 ```bash
-docker build -t wvdl/temporal-demo:exe-1 ../exe/.
+docker build -t wvdl/temporal-demo:exe-1.0 ../exe/.
 ```
 ```bash
-docker build -t wvdl/temporal-demo:iot-1 ../iot/.
+docker build -t wvdl/temporal-demo:iot-1.0 ../iot/.
 ```
 ```bash
-docker build -t wvdl/temporal-demo:mass-1 ../mass/.
+docker build -t wvdl/temporal-demo:mass-1.0 ../mass/.
 ```
 ```bash
-docker build -t wvdl/temporal-demo:rdw-1 ../rdw/.
+docker build -t wvdl/temporal-demo:rdw-1.0 ../rdw/.
 ```
